@@ -1,4 +1,11 @@
-This is a markdown syntax quick reference for github docs.
+# Introduction
+
+This is a quick reference for markdown syntax in **github & vim**.
+
+For more info about markdown in github, visit [markdown docs](https://docs.github.com/zh/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/quickstart-for-writing-on-github)
+
+For more info about markdown in vim, visit [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim)
+
 
 # Heading
 
@@ -31,7 +38,7 @@ Use a blank line to break two paragraphs.
 |Bold and Italic    |`***Text***`               |***Text***                 |
 |Crossed            |`~~Text~~`                 |~~Text~~                   |
 |Subscript          |`Text<sub>subscript</sub>` |Text<sub>subscript</sub>   |
-|Supscript          |`Text<sub>supscript</sub>` |Text<sub>supscript</sub>   |
+|Supscript          |`Text<sub>supscript</sub>` |Text<sup>supscript</sup>   |
 
 
 # List
@@ -70,29 +77,28 @@ Use `- [x]` to create a completed task list.
 
 # Link
 
-## Hyperlink
+`link` includes URL links and relative links in github. 
+For relative links, use `/` corresponds to root directory of repository, `./` and `../` correspond
+to current directory and parent directory.
 
-Use `<hyperlink>` to make it clickable.
-<https://markdown.com.cn/>
+Use `<hyperlink>` to make hyperlinks clickable.
+<https://github.com/TBD9rain/>
 
-Use `[hyperlink_name](hyperlink "hovering_name")` to insert a hyperlink.
+Use `[link_name](link_path "hovering_name")` to insert a hyperlink, where hovering\_name is optional.
 [Markdown](https://markdown.com.cn/ "Markdown Web in Chinese")
+[Github](https://github.com/TBD9rain/)
+[README](./README.md "go to README")
 
-Hyperlink element can be decorated:
-- ***[Markdown](https://markdown.com.cn/ "Markdown Web in Chinese")***
-- **[Markdown](https://markdown.com.cn/)**
-- *<https://markdown.com.cn/>*
+`link` element can be decorated:
+- <https://markdown.com.cn/>
+- *[Markdown](https://markdown.com.cn/ "Markdown Web in Chinese")*
+- **[Github](https://github.com/TBD9rain/)**
+- ***[README](./README.md "go to README")***
 
-## Link in Content (NOT available in markdown-preview.nvim)
+`link` can be settled in headings as following.
 
-Use `[link_name] [link_identifier]` to create a link starting point.
-`link_identifier` could be consisted of letters, digits, spcace, and punctuation marks.
-[tunnel] [tunnel1]
+## [heading link example](https://github.com/TBD9rain/ "homepage of github")
 
-random text.
-
-Use `[link_identifier]:` plus at least one space to create a link destination.
-[tunnel1]: destination of tunnel1.
 
 # Footnote
 
@@ -118,10 +124,11 @@ The above image is from [markdown](https://markdown.com.cn/basic-syntax/images.h
 # Reference
 
 Use `>` to begin a reference line.
+Use `>` followed by a blank line to start another text line.
 Reference can include other elements.
 Reference can be nested in another reference.
 
-> Do more than it can be done --Lingwei
+> Do more than it needs --Lingwei
 > 
 > **However**
 >> Don't do too more -- Lingwei
@@ -176,7 +183,7 @@ Text emphasis, link, and code in line can be used in tables.
 
 Use `\` to type escaping characters.
 
-|Escaping Character |Display        |
+|Markdown Syntax    |Rendered       |
 |:---               |:---           |
 |`\\`               |\\             |
 |`` \` ``           |\`             |
@@ -200,3 +207,21 @@ Use `:<emoji_code>:` to add emojis.
 :smiley: :blush: :joy:
 
 For list of all available emojis, check [emoji list](https://github.com/ikatyang/emoji-cheat-sheet).
+
+# Others
+
+## Mermaid
+
+Mermaid Introduction: 
+> Mermaid is a JavaScript-based diagramming and charting tool that uses Markdown-inspired text definitions and a renderer to create and modify complex diagrams. --README of Mermaid
+
+Mermaid could be used to quickly create flowcharts, sequential diagram, Gantt chart, class diagram, state diagram, pie chart, journey diagram, and C4 diagram. A flowchart is showed as following. For more info, check [Mermaid](https://github.com/mermaid-js/mermaid/tree/develop).
+
+```mermaid
+flowchart LR
+A[Hard] -->|Text| B(Round)
+B --> C{Decision}
+C -->|One| D[Result 1]
+C -->|Two| E[Result 2]
+```
+
