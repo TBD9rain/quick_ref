@@ -1,10 +1,10 @@
 # Introduction
 
-This is a quick reference for markdown syntax in **github & vim**.
-
-For more info about markdown in github, visit [markdown docs](https://docs.github.com/zh/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/quickstart-for-writing-on-github)
+This is a quick reference for markdown syntax in **vim & github**.
 
 For more info about markdown in vim, visit [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim)
+
+For more info about markdown in github, visit [markdown docs](https://docs.github.com/zh/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/quickstart-for-writing-on-github)
 
 
 # Heading
@@ -24,7 +24,7 @@ There are 6 header levles as following:
 ###### Heading level 6
 
 
-# Paragraph break
+# Paragraph Break
 
 Use a blank line to break two paragraphs. 
 
@@ -43,7 +43,7 @@ Use a blank line to break two paragraphs.
 
 # List
 
-## Unordered List
+## Unordered list
 
 Use `*`, `+`, or `-` to create an unordered list.
 
@@ -55,7 +55,7 @@ Use `*`, `+`, or `-` to create an unordered list.
     + List B, item 1.2
 * List C, item 1
 
-## Ordered List
+## Ordered list
 
 Use a number followed by a `.` to create an ordered list.
 
@@ -65,7 +65,7 @@ Use a number followed by a `.` to create an ordered list.
 3. list item 3
     1. list itme 3.1
 
-## Task List
+## Task list
 
 Use `- [ ]` to create a task list.
 Use `- [x]` to create a completed task list.
@@ -142,13 +142,22 @@ Use **three** `*`, `-`, or `_` in a single line to insert a split line:
 
 # Code
 
-## Code in Line
+## Code in line
 
 Use one `` ` `` **pair** to wrap `code words` or `code phrases`.
 
 Use two `` ` `` **pair** to wrap ``code `words` with backtick``.
 
-## Code Block
+The code words and code phrases could be decorated with text decorations.
+
+- *`Italic`*
+- **`Bold`**
+- ***`Italic and Blod`***
+- ~~`Crossed`~~
+- `Text`<sub>`subscript`</sub>
+- `Text`<sup>`supscript`</sup>
+
+## Code block
 
 Use three `` ` `` or `~` to create code block.
 
@@ -206,22 +215,46 @@ Use `:<emoji_code>:` to add emojis.
 
 :smiley: :blush: :joy:
 
-For list of all available emojis, check [emoji list](https://github.com/ikatyang/emoji-cheat-sheet).
+For list of all available emojis, visit [emoji list](https://github.com/ikatyang/emoji-cheat-sheet).
 
-# Others
 
-## Mermaid
+# Mermaid
 
 Mermaid Introduction: 
 > Mermaid is a JavaScript-based diagramming and charting tool that uses Markdown-inspired text definitions and a renderer to create and modify complex diagrams. --README of Mermaid
 
-Mermaid could be used to quickly create flowcharts, sequential diagram, Gantt chart, class diagram, state diagram, pie chart, journey diagram, and C4 diagram. A flowchart is showed as following. For more info, check [Mermaid](https://github.com/mermaid-js/mermaid/tree/develop).
+Mermaid could be used to quickly create: 
+- [flowcharts](http://mermaid.js.org/syntax/flowchart.html)
+- [sequential diagram](http://mermaid.js.org/syntax/sequenceDiagram.html)
+- [Git stream](http://mermaid.js.org/syntax/gitgraph.html)
+- [state diagram](http://mermaid.js.org/syntax/stateDiagram.html) 
+- [class diagram](http://mermaid.js.org/syntax/classDiagram.html)
+- [...](http://mermaid.js.org/intro/n00b-gettingStarted.html)
+
+A flowchart creation is displayed as following. 
+
+~~~
+```mermaid
+flowchart LR
+    A[Hard] -->|Text| B(Round)
+    B --> C{Decision}
+    C -->|One| D[Result 1]
+    C -->|Two| E[Result 2]
+```
+~~~
 
 ```mermaid
 flowchart LR
-A[Hard] -->|Text| B(Round)
-B --> C{Decision}
-C -->|One| D[Result 1]
-C -->|Two| E[Result 2]
+    A[Hard] -->|Text| B(Round)
+    B --> C{Decision}
+    C -->|One| D[Result 1]
+    C -->|Two| E[Result 2]
 ```
+
+For more info, visit [Mermaid on Github](https://github.com/mermaid-js/mermaid/tree/develop) and [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim).
+
+
+# Others
+
+To be continued
 
