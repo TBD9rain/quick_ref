@@ -43,21 +43,46 @@ Use a blank line to break two paragraphs.
 
 # List
 
+Texts in list items can be decorated.
+
 ## Unordered list
 
 Use `*`, `+`, or `-` to create an unordered list.
 
+```
 - List A, item 1
     - List A, item 1.1
         - List A, item 1.1.1
+```
+- List A, item 1
+    - List A, item 1.1
+        - List A, item 1.1.1
+
+```
 + List B, item 1
     + List B, item 1.1
     + List B, item 1.2
+```
++ List B, item 1
+    + List B, item 1.1
+    + List B, item 1.2
+
+```
+* List C, item 1
+```
 * List C, item 1
 
 ## Ordered list
 
-Use a number followed by a `.` to create an ordered list.
+Use numbers followed by a `.` to create an ordered list.
+
+```
+1. list item 1
+    1. list item 1.1
+2. list item 2
+3. list item 3
+    1. list itme 3.1
+```
 
 1. list item 1
     1. list item 1.1
@@ -67,8 +92,8 @@ Use a number followed by a `.` to create an ordered list.
 
 ## Task list
 
-Use `- [ ]` to create a task list.
-Use `- [x]` to create a completed task list.
+Use `- [ ]` to create a uncompleted task item.
+Use `- [x]` to create a completed task item.
 
 - [ ] task 1.
 - [x] task 2.
@@ -77,19 +102,22 @@ Use `- [x]` to create a completed task list.
 
 # Link
 
-`link` includes URL links and relative links in github. 
+`link` includes URL links and relative links in **github**. 
 For relative links, use `/` corresponds to root directory of repository, `./` and `../` correspond
 to current directory and parent directory.
 
 Use `<hyperlink>` to make hyperlinks clickable.
 <https://github.com/TBD9rain/>
 
-Use `[link_name](link_path "hovering_name")` to insert a hyperlink, where hovering\_name is optional.
+Use `[link_name](link_path "hovering_name")` to insert a hyperlink, where `hovering_name` is optional.
+
 [Markdown](https://markdown.com.cn/ "Markdown Web in Chinese")
+
 [Github](https://github.com/TBD9rain/)
+
 [README](./README.md "go to README")
 
-`link` element can be decorated:
+Texts in `link` element can be decorated:
 - <https://markdown.com.cn/>
 - *[Markdown](https://markdown.com.cn/ "Markdown Web in Chinese")*
 - **[Github](https://github.com/TBD9rain/)**
@@ -104,7 +132,7 @@ Use `[link_name](link_path "hovering_name")` to insert a hyperlink, where hoveri
 
 Use `[^footnote_identifier]` to create a footnote.
 Use `[^footnote_identifier]: ` to create corresponding footnote text.
-The location of footnote text in context **doesn't affect** the apperance location.
+The location of footnote texts will be settled at the end of the web page regardless of its location in markdown files.
 
 A footnote example[^1].
 
@@ -118,21 +146,20 @@ Use `[![image_caption](image_link "hovering_name")](hyper_link)` to insert an im
 
 ![image example](https://markdown.com.cn/assets/img/philly-magic-garden.9c0b4415.jpg)
 
-The above image is from [markdown](https://markdown.com.cn/basic-syntax/images.html)
+The above image is from [markdown](https://markdown.com.cn/basic-syntax/images.html).
 
 
 # Reference
 
 Use `>` to begin a reference line.
-Use `>` followed by a blank line to start another text line.
-Reference can include other elements.
+Use `>` followed by a blank line to start another reference text line.
+Reference can include other elements and texts can be decorated.
 Reference can be nested in another reference.
 
-> Do more than it needs --Lingwei
+> - Do more than it needs --Lingwei
 > 
-> **However**
->> Don't do too more -- Lingwei
-
+> - **However**
+>> 1. Don't do too more -- Lingwei
 
 # Split Line
 
@@ -167,7 +194,7 @@ int main{
 }
 ```
 
-Add language identifier next to three `` ` `` or `~` to turn on syntax highlight. There is 'c' identifier next to  the first `~~~` in following code block. 
+Add language identifier next to the three `` ` `` or `~` in the first line to turn on syntax highlight. There is 'c' identifier following the first `~~~` in the first line in following code block. 
 
 ```c
 int main{
@@ -229,7 +256,7 @@ Mermaid could be used to quickly create:
 - [Git stream](http://mermaid.js.org/syntax/gitgraph.html)
 - [state diagram](http://mermaid.js.org/syntax/stateDiagram.html) 
 - [class diagram](http://mermaid.js.org/syntax/classDiagram.html)
-- [...](http://mermaid.js.org/intro/n00b-gettingStarted.html)
+- [...](http://mermaid.js.org/intro/n00b-gettingStarted.html "Getting Stated")
 
 A flowchart creation is displayed as following. 
 
@@ -256,5 +283,5 @@ For more info, visit [Mermaid on Github](https://github.com/mermaid-js/mermaid/t
 
 # Others
 
-To be continued
+Kates and so on ...
 
