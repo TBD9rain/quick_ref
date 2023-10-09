@@ -29,6 +29,17 @@ There are 6 header levles as following:
 Use a blank line to break two paragraphs. 
 
 
+# Comment
+
+Texts between `<!--` and `-->` iare invisible.
+
+```
+<!--
+Invisible texts
+-->
+```
+
+
 # Text Decoration
 
 |Description        |Syntax                     |Rendered                   |
@@ -213,6 +224,16 @@ Text emphasis, link, and code in line can be used in tables.
 |:--------------|:-----------:  |---:           |
 |*text 1*       |**text 2**     |***text 3***   |
 |`text 1234`    |text `4123`    |[markdown](https://markdown.com.cn/basic-syntax/images.html)|
+
+
+# Special Symbols
+
+|Markdown Syntax        |Rendered           |
+|:---                   |:---               |
+|`$\leftarrow$`         |$\leftarrow$       |
+|`$\rightarrow$`        |$\rightarrow$      |
+|`$\downarrow$`         |$\downarrow$       |
+|`$\uparrow$`           |$\uparrow$         |
 
 
 # Escaping Characters
