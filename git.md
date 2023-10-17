@@ -75,7 +75,7 @@ flowchart RL
 
     other[("other repository")]
 
-    cached[("cached zone")]
+    cached[("cached area")]
 
     committed[("local repository")]
 
@@ -98,16 +98,15 @@ flowchart RL
 
     untracked   -->|"add"| cached
     modified    -->|"add"| cached
-    cached      -->|"rm"| untracked
-    modified    -->|"reset"| cached
     remote      -->|"fetch"| updated
     updated     -->|"merge"| modified
 ```
 
+<!--
 ```mermaid
 sequenceDiagram
     participant untracked files
-    participant cached zone
+    participant cached area
     participant modified files
     participant updated files
     participant local repository
@@ -123,19 +122,19 @@ sequenceDiagram
 
     rect rgb(255, 180, 162)
         Note right of untracked files                   : track & untrack files
-        untracked files     ->>cached zone              : add
-        cached zone         ->>untracked files          : rm --cached
+        untracked files     ->>cached area              : add
+        cached area         ->>untracked files          : rm --cached
     end
 
     rect rgb(229, 152, 155)
-        Note right of cached zone                       : modify tracked files
-        modified files      ->>cached zone              : reset --staged (discard)
-        modified files      ->>cached zone              : add (accept)
+        Note right of cached area                       : modify tracked files
+        modified files      ->>cached area              : reset --staged (discard)
+        modified files      ->>cached area              : add (accept)
     end
 
     rect rgb(181, 131, 141)
-        Note right of cached zone                       : archive files
-        cached zone         ->>local repository         : commit
+        Note right of cached area                       : archive files
+        cached area         ->>local repository         : commit
         local repository    ->>remote repository        : push
     end
 
@@ -148,37 +147,182 @@ sequenceDiagram
         Note over modified files, local repository      : download updated files and merge with local files
         remote repository   ->>updated files            : fetch
         updated files       ->>modified files           : merge
-        modified files      ->>cached zone              : add
+        modified files      ->>cached area              : add
     end
 
     rect rgb(181, 131, 141)
-        Note right of cached zone                       : achive files
-        cached zone         ->>local repository         : commit
+        Note right of cached area                       : achive files
+        cached area         ->>local repository         : commit
         local repository    ->>remote repository        : push
     end
 ```
+-->
 
 
-# Frequently Used Git Repository Operation Commands
+# Local Repository
+
+## Check loacl repository status
+
+To check the status of local git repository, use the following command.
+```
+git status
+```
 
 ## Initialize a repository
 
-User could create a loacl Git repository by:
-- initialize a local directory
-- clone an existing repository
-
 ### Initialize a local directory
 
-The following commands initialize a local existing directory to a Git repository.
+The following commands initialize a local working directory into a Git repository.
 ```
-cd <target_directory>
+cd <working_directory>
 git init
 ```
 
 ### Clone an existing repository
 
-The fllowing commands clone a existing repository from internet or another local path to current directory and make a new directory.
+The fllowing command clone a existing repository 
+from the internet or a local path 
+and make a new working directory named by the repository.
 ```
 git clone <repository_path>
 ```
+
+## Delete local repository
+
+To delete a git local repository, directly delete `.git` directory by following commands or by
+manual operations.
+```
+cd <target_directory>
+rm -rf .git
+```
+
+## Ignore specific files
+
+To ignore specific files while checking git status, add a file named `.gitignore` in local
+repository directory.
+
+For info about file ignorance method, check [github page](https://github.com/github/gitignore) 
+or 
+[Pro git](https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository).
+
+
+## Record files
+
+### Add new files to cached area
+
+To add current version of new files or modified files in the working directory to cached area, 
+use the following command.
+```
+git add <file_path>
+```
+
+
+### Commit files to local repository
+
+To commit files to local repository and save tracked files, use the following command.
+```
+git commit
+```
+After enter this command, a default editor will pop up and waits for a commit message.
+Without a commit message, commit will fail.
+
+
+## Recover files
+
+### Remove added files
+
+To move the **file** from cached area to working directory, use the following command.
+```
+git rm --cached <file_path>
+```
+
+
+### Discard changes in working directory
+
+The following command will dicard changes of the file in working directory. 
+This command will also reload the verison of the file in the search order of: 
+1. **cached area**
+2. **last commit**
+```
+git restore <modified_file_path>
+```
+
+
+### Discard changes in cached area
+
+The following command will move **changes** of the file from cached area to working directory. 
+```
+git restore --staged <modified_file_path>
+```
+
+
+## Compare files
+
+To display changes between working directory and the last commit:
+```
+git diff
+```
+
+To display changes between cached area and the last commit:
+```
+git diff --cached
+```
+
+
+## Remove files
+
+
+# Commit management
+
+## Check commit history
+
+To display commit history:
+```
+git log
+```
+
+## Create new branch
+
+```
+git branch <branch_name>
+```
+
+## Checkout 
+
+```
+git checkout <branch_name>
+```
+
+
+# Remote Repository
+
+## Check remote path
+
+To display remote repositories configured for local repository:
+```
+git remote
+```
+
+TO display remote repositories and associated URLs:
+```
+git remote -v
+```
+
+## Add remote link
+
+To add a remote repository:
+```
+git remote add <name> <URL>
+```
+where \<name\> is a alias to the URL defined by user, such as "origin". 
+
+
+## Push
+
+
+## Fetch
+
+
+## Pull
+
 
