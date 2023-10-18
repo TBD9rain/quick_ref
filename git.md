@@ -49,9 +49,9 @@ git config --list
 
 ## Set or unset variables
 
-`git config --add <var_name>` set the variable in local config file where `--add` is optional. 
+`git config --add <var>` set the variable in local config file where `--local` is optional. 
 
-`git config --unset <var_name>` unset the variable in local config file. 
+`git config --unset <var>` unset the variable in local config file. 
 
 Add option *`--local`*, **`--global`**, or ***`--system`*** to operate in a specific level. 
 
@@ -161,7 +161,7 @@ sequenceDiagram
 
 # Local Repository
 
-## Check loacl repository status
+## Check local repository status
 
 To check the status of local git repository, use the following command.
 ```
@@ -182,7 +182,7 @@ git init
 
 The fllowing command clone a existing repository 
 from the internet or a local path 
-and make a new working directory named by the repository.
+and make a new working directory with named as the repository.
 ```
 git clone <repository_path>
 ```
@@ -213,7 +213,7 @@ or
 To add current version of new files or modified files in the working directory to cached area, 
 use the following command.
 ```
-git add <file_path>
+git add <file>
 ```
 
 
@@ -233,28 +233,35 @@ Without a commit message, commit will fail.
 
 To move the **file** from cached area to working directory, use the following command.
 ```
-git rm --cached <file_path>
+git rm --cached <file>
 ```
 
 
 ### Discard changes in working directory
 
-The following command will dicard changes of the file in working directory. 
-This command will also reload the verison of the file in the search order of: 
+The following commands will dicard changes of the file in working directory. 
+Both commands will also reload the verison of the file in the search order of: 
 1. **cached area**
 2. **last commit**
 ```
-git restore <modified_file_path>
+git restore <modified_file>
+```
+OR
+```
+git checkout -- <file>
 ```
 
 
 ### Discard changes in cached area
 
-The following command will move **changes** of the file from cached area to working directory. 
+The following commands will move **changes** of the file from cached area to working directory. 
 ```
-git restore --staged <modified_file_path>
+git restore --staged <modified_file>
 ```
-
+OR
+```
+git reset HEAD <file>
+```
 
 ## Compare files
 
@@ -271,26 +278,95 @@ git diff --cached
 
 ## Remove files
 
+To remove a committed file from next commit and working directory:
+```
+git rm <file>
+```
+
+The above command equals to
+```
+rm <file>
+git add <file>
+```
+
 
 # Commit management
 
-## Check commit history
+## View commit history
 
-To display commit history:
+To view commit history:
 ```
 git log
 ```
 
-## Create new branch
+The above command can be run with following options to show different information.
+|Option             |Description                                    |
+|:---               |:---                                           |
+|`--graph`          |show branch history with graphic description   |
+|`-p`               |show differences introduced by each commit     |
+|`--shortstat`      |show abbreviated stats for each commit         |
+|`--stat`           |shorten `--stat` infos                         |
+|`--name-only`      |show names of changed files                    |
+|`--name-status`    |show changes of changed files                  |
+|`--pretty`         |show commits with alternate format             |
 
+To limit output, use following options:
+|Option                     |Description                                        |
+|:---                       |:---                                               |
+|`-[N]`                     |only last N commits                                |
+|`--since` or `--after`     |only commits after the specific date               |
+|`--until` or `--before`    |only commits before the specific date              |
+|`--grep`                   |only commits with messages containing the string   |
+|`-S`                       |only commits changing code matching the string     |
+|`--author`                 |only commits with matched author                   |
+|`committer`                |only commits with matched committer                |
+
+
+## List branches
+To view local branches:
 ```
-git branch <branch_name>
+git branch
+```
+To view merged or unmerged branches add option `--merged` or `--no-merged`.
+
+To view remote branches of all remote repositories:
+```
+git branch -r
 ```
 
-## Checkout 
-
+To view remote branches' tracking information:
 ```
-git checkout <branch_name>
+git branch -vv
+```
+
+
+## Branch modifications
+To create a new branch:
+```
+git branch <branch>
+```
+
+To rename the current branch:
+```
+git branch -m <new_branch_name>
+```
+
+To delete a branch:
+```
+git branch -d <branch>
+```
+Replace `-d` with `-D` to forcibly delete a branch which hasn't been merge to other branch.
+
+
+## Checkout branches
+To checkout an existing branch (move `HEAD` pointer to the branch):
+```
+git checkout <branch>
+```
+
+To create a new branch and checkout it immediately:
+```
+git checkout -b <branch>
 ```
 
 
@@ -298,31 +374,112 @@ git checkout <branch_name>
 
 ## Check remote path
 
-To display remote repositories configured for local repository:
+To view aliases of remote repositories configured for local repository:
 ```
 git remote
 ```
 
-TO display remote repositories and associated URLs:
+To display remote repositories and associated URLs:
 ```
 git remote -v
 ```
 
-## Add remote link
+To view details of a remote repository:
+```
+git remote show <remote>
+```
+
+
+## Modify remote repository configs
 
 To add a remote repository:
 ```
-git remote add <name> <URL>
+git remote add <remote> <url>
 ```
-where \<name\> is a alias to the URL defined by user, such as "origin". 
+
+To rename a remote repository:
+```
+git remote rename <old_name> <new_name>
+```
+
+To change the URL of a remote repository:
+```
+git remote set-url <remote> <new_url>
+```
+
+To remove a remote repository:
+```
+git remote remove <remote>
+```
 
 
 ## Push
+```
+git push <remote> <branch>
+```
 
 
 ## Fetch
+```
+git fetch <remote>
+```
 
 
 ## Pull
+```
+git pull <remote> <branch>
+```
+
+
+# Tagging
+One commit can hold multiple tags.
+No repeative tags are allowed.
+
+
+## Local tagging
+To view existing tags:
+```
+git tag
+```
+
+To list existing tags with match string, where `-l` is as the same as `-list`: 
+```
+git tag -l <string>
+```
+
+To add a tag to specific commit: 
+```
+git tag <tag> <commit>
+```
+If \<commit\> is not given, the target commit is the last commit.
+
+To add a tag and annotations to specific commit:
+```
+git tag -a <tag> <commit>
+```
+If \<commit\> is not given, the target commit is the last commit.
+After execute the above command, the editor will pop up for annotating.
+
+To delete a tag:
+```
+git tag -d <tag>
+```
+
+
+## Remote tagging
+To share local a specific tag to remote repository:
+```
+git push <remote> <tag>
+```
+
+To share all local tags to remote repository:
+```
+git push <remote> --tags
+```
+
+To delete a specific tag from remote repository:
+```
+git push <remote> --delete <tag>
+```
 
 
