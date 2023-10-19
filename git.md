@@ -336,16 +336,6 @@ git branch -v
 
 To view merged or unmerged branches add option `--merged` or `--no-merged`.
 
-To view remote branches of all remote repositories:
-```
-git branch -r
-```
-
-To view remote branches' tracking information:
-```
-git branch -vv
-```
-
 
 ## Branch modifications
 To create a new branch:
@@ -406,9 +396,15 @@ git mergetool
 ```
 
 
+## Rebase
+
+
+## Reset
+
+
 # Remote Repository
 
-## Check remote path
+## View remote path
 
 To view aliases of remote repositories configured for local repository:
 ```
@@ -449,21 +445,103 @@ git remote remove <remote>
 ```
 
 
-## Push
+## View remote branches
+To view remote branches of all remote repositories:
 ```
-git push <remote> <branch>
+git branch -r
+```
+
+To view remote branches' tracking information:
+```
+git branch -vv
+```
+
+
+## Update remote branch info
+To update records of remote branches:
+```
+git remote update -p
+```
+
+
+## Push
+To push current branch to default remote branch:
+```
+git push
+```
+To specify branches and remote repository:
+```
+git push <remote> [<local_branch>[:<remote_branch>]]
+```
+To push current branch and add upstream reference:
+```
+git push -u <remote> [<local_branch>[:<remote_branch>]]
+```
+To push all local branches:
+```
+git push --all
 ```
 
 
 ## Fetch
+To download commits from remote repository:
 ```
-git fetch <remote>
+git fetch
 ```
+To specify remote repository:
+```
+git fetch <remote> <remote_branch>
+```
+
+After fetch commits, manual merge is needed.
 
 
 ## Pull
+To pull current branch from default remote branch:
 ```
-git pull <remote> <branch>
+git pull
+```
+which can be seemed as:
+```
+git fetch
+git merge
+```
+To specify branches and remote repository:
+```
+git pull <remote> [<remote_branch>]
+```
+
+
+## Checkout remote branch
+To copy a remote branch and checkout it:
+```
+git checkout -t <remote>/<remote_branch>
+```
+If the remote branch can't be found, try ***update remote branch info***.
+
+
+## Track branch
+Automatically, cloned branches and pushed branches 
+are tracked with corresponing remote branches.
+
+To manually set a remote upstream branch for current branch of local repository:
+```
+git branch -u <remote>/<remote_branch>
+```
+If the remote branch can't be found, try ***update remote branch info***.
+
+
+## Delete remote branch
+To delete specific remote branch:
+```
+git push <remote> --delete <remote_branch>
+```
+
+
+## Set remote HEAD pointer
+To manual set remote HEAD pointer:
+```
+git remote set-head <remote> <branch>
 ```
 
 
