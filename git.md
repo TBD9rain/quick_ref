@@ -299,7 +299,7 @@ To view commit history:
 git log
 ```
 
-The above command can be run with following options to show different information.
+To change the message of each commit:
 |Option             |Description                                    |
 |:---               |:---                                           |
 |`--graph`          |show branch history with graphic description   |
@@ -310,9 +310,10 @@ The above command can be run with following options to show different informatio
 |`--name-status`    |show changes of changed files                  |
 |`--pretty`         |show commits with alternate format             |
 
-To limit output, use following options:
+To limit number of commit to be printed, use following options:
 |Option                     |Description                                        |
 |:---                       |:---                                               |
+|`--all`                    |show all branches and commits                      |
 |`-[N]`                     |only last N commits                                |
 |`--since` or `--after`     |only commits after the specific date               |
 |`--until` or `--before`    |only commits before the specific date              |
@@ -322,11 +323,17 @@ To limit output, use following options:
 |`committer`                |only commits with matched committer                |
 
 
-## List branches
+## View branches
 To view local branches:
 ```
 git branch
 ```
+
+To view branches and corresponding last commits:
+```
+git branch -v
+```
+
 To view merged or unmerged branches add option `--merged` or `--no-merged`.
 
 To view remote branches of all remote repositories:
@@ -367,6 +374,35 @@ git checkout <branch>
 To create a new branch and checkout it immediately:
 ```
 git checkout -b <branch>
+```
+
+
+## Merge branches
+To merge current branch and target branch:
+```
+git merge <branch>
+```
+
+If the commit of the target branch is directly ahead of the commit of the current branch, the pointer of current branch will be move forward.
+
+If the two branch diverged from older point, there will be a new commit merged by the current branch and the target branch.
+
+If there are conflicts between two branch, the git will give a hint. 
+The confilct should be resolved by modify the confilct files.
+
+The confilct contents of different branches are marked by:
+```
+<<<<<<< <branch>:<file>
+<content>
+```
+and divided by:
+```
+=======
+```
+
+Or use the interactive tool to handle merge conflicts:
+```
+git mergetool
 ```
 
 
