@@ -172,7 +172,7 @@ git status
 
 ### Initialize a local directory
 
-The following commands initialize a local working directory into a Git repository.
+To initialize a local working directory into a Git repository: 
 ```
 cd <working_directory>
 git init
@@ -180,12 +180,13 @@ git init
 
 ### Clone an existing repository
 
-The fllowing command clone a existing repository 
-from the internet or a local path 
-and make a new working directory with named as the repository.
+To clone a existing repository from internet: 
 ```
-git clone <repository_path>
+git clone <repository_path> [<path>]
 ```
+If \<path\> is not specified, 
+a new working directory will be made with name of repository.
+
 
 ## Delete local repository
 
@@ -225,6 +226,11 @@ git commit
 ```
 After enter this command, a default editor will pop up and waits for a commit message.
 Without a commit message, commit will fail.
+
+To modify last commit (files or commit message):
+```
+git commit --amend
+```
 
 
 ## Recover files
@@ -288,6 +294,85 @@ The above command equals to
 rm <file>
 git add <file>
 ```
+
+
+## Clean
+To view results of clean:
+```
+git clean --dry-run
+```
+which is same as option `-n`.
+
+To clean untracked files which are not ignored:
+```
+git clean
+```
+with option `-i` to run interactively, 
+with option `-x` to clean Git produced files which are ignored by default, 
+with option `-X` to clean files ignored by Git
+
+
+# Submodule
+
+## Add submodule
+To add a repository into current local repository as submodule:
+```
+git submodule add <repository_path> [<path>]
+```
+If \<path\> is not specified, 
+the repository will be added to a new directory named the same as the repository.
+
+After adding a submodule, a `.gitmodules` file will be added.
+
+
+## Unregister submodule
+To unregister a submodule:
+```
+git submodule deinit <submodule>
+```
+
+
+## View submodule difference
+To view submodule differences add the option `--submodule` in `git diff` command.
+
+
+## Clone or pull a repository with submodule
+After cloning a repository or pulling a reposiroty with submodule, 
+use the following commands to clone the submodule repository: 
+```
+git submodule init
+git submodule update
+```
+Or
+```
+git submodule update --init
+```
+Add option `--init` for pulling is safe for new committed submodules to be  pulled.
+The option `--recurese-submodule` to update nested submodules.
+
+To clone a repository with its submodules at the same time: 
+```
+git clone --recurese-submodule <repository_path> [<path>]
+```
+
+
+## Update submodule
+Submodules can be updated by Git commands in the submodule directory. Or use the following command to updated with the default branch:
+```
+git submodule update --remote
+```
+
+
+## Push repository with submodules
+To safely push repositroy with submodules:
+```
+git push --recurse-submodule=check
+```
+
+
+## More info
+For more info about git submodule, check
+[submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
 
 
 # Commit management
@@ -356,7 +441,7 @@ Replace `-d` with `-D` to forcibly delete a branch which hasn't been merge to ot
 
 
 ## Checkout branches
-To checkout an existing branch (move `HEAD` pointer to the branch):
+To checkout an existing branch (move `HEAD` pointer to another branch):
 ```
 git checkout <branch>
 ```
@@ -396,10 +481,86 @@ git mergetool
 ```
 
 
+## Stash current changes
+To temporarily save current cached area and working directory for later recovery:
+```
+git stash [push]
+```
+After this command, the cached area and working directory will be clean as last commit.
+To stash cached area and not clean cached area add option `--keep-index`.
+To stash untracked files add option `-u` or `--include-untracked`, 
+and `-a` or `--all` to stash ignored files as well.
+
+To view stash list:
+```
+git stash list
+```
+
+To load a specific stash:
+```
+git stash apply [<stash>]
+```
+If \<stash\> is not given, the last stash will be loaded.
+
+To remove a specific stash from stash list:
+```
+git stash drop [<stash>]
+```
+
+To load a stash and remove it from stash list:
+```
+git stash pop [<stash>]
+```
+
+To cerate a bew branch based on current modified cahced area and working directory:
+```
+git stash branch <branch> [<stash>]
+```
+
+
 ## Rebase
+To rebase current branch to a base branch:
+```
+git rebase <base_branch>
+```
+After this command, conflicts between commits need manual resolution with:
+```
+git add <conflict_file>
+git rabase --continue
+```
+
+To abort reabse operation:
+```
+git rebase --abort
+```
+
+To rebase with more interactive options:
+```
+git rebase -i <base_branch>
+```
+`edit` cloud be used to modify commit messages.
+`squash` could be used to compress commits.
 
 
 ## Reset
+To reset commit (move current branch to previous commit),
+but remain cached area and working directory of current commit:
+```
+git reset --soft <commit>
+```
+
+To reset commit and cached area, 
+but remain current working directory of current commit:
+```
+git reset [--mixed] <commit>
+```
+
+To reset commit, cached area, and working directory:
+```
+git reset --hard <commit>
+```
+***This command is dangerous, which will lose the commits after the \<commit\>.***
+To undo this command, `reflog` is needed.
 
 
 # Remote Repository
@@ -469,14 +630,20 @@ To push current branch to default remote branch:
 ```
 git push
 ```
+To force current branch to cover remote branch, add option `-f` or `--force`.
+`rebase` or `commit --amend` might need this option.
+***Push forcibly with CAUTION.***
+
 To specify branches and remote repository:
 ```
 git push <remote> [<local_branch>[:<remote_branch>]]
 ```
+
 To push current branch and add upstream reference:
 ```
 git push -u <remote> [<local_branch>[:<remote_branch>]]
 ```
+
 To push all local branches:
 ```
 git push --all
@@ -509,6 +676,10 @@ git merge
 To specify branches and remote repository:
 ```
 git pull <remote> [<remote_branch>]
+```
+To pull all remotes:
+```
+git pull --all
 ```
 
 
