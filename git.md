@@ -25,17 +25,18 @@ The usage of **Git commands** in windows command line is the focus of this ref.
 # Configure Git
 
 There are three Git config files in different levels and different disk locations to configure Git. 
-The configurations and options within installation process can be modified in config files. 
+The configurations and options made during installation process can be modified in config files. 
+
 Three Git config files windows 10:
 
-1. system config file works for the whole OS: 
+1. system config file works for all login users of the OS: 
     - \<git directory\>/ect/gitconfig
 2. global config file works for the current login user:
     - \<user directory\>/.gitconfig
-3. local config file works for the specific repository directory:
+3. local config file works for the specific repository:
     - \<repository directory\>/.git/config
 
-**The local config covers global config, and global config covers general config.**
+**The local config covers the global config, and the global config covers the system config.**
 
 For more info, type `git config --help`.
 
@@ -49,17 +50,21 @@ git config --list
 
 ## Set or unset variables
 
-`git config --add <var>` set the variable in local config file where `--local` is optional. 
+`git config --add <var> <value>` set the variable in local config file where `--local` is optional. 
 
 `git config --unset <var>` unset the variable in local config file. 
 
 Add option *`--local`*, **`--global`**, or ***`--system`*** to operate in a specific level. 
 
 Configure user name and email in global config file (usually used) with following command:
-
 ```
 git config --global user.name "USER NAME"
 git config --global user.email "MYEAMIAL@MINE.ME"
+```
+
+Configure gvim as default editor for git:
+```
+git config --global core.editor "'<gvim_path>\gvim.exe' --nofork '%*'"
 ```
 
 Additionally, the git config file can be edited with editor.
@@ -69,129 +74,90 @@ For all available configurations, type `git config --help` to view.
 
 # Git Work Flow
 
+## From perspective of area
 ```mermaid
-flowchart RL
-    local[("local directory")]
+flowchart LR
+    norm_dir["Normal Directory"]
+    other["Other Remote Repository"]
+    remote["Remote Repository"]
 
-    other[("other repository")]
+    subgraph git_repo ["Git Repository"]
+        work[("working directory")]
+        stage[("staging area")]
+        local[("local repository")]
 
-    cached[("cached area")]
+        work    ===> |"add"| stage
+        stage   ===> |"restore"| work
+        stage   ===> |"commit"| local
+    end
 
-    committed[("local repository")]
-
-    remote[("remote repository")]
-
-    cached      ==>|"commit"| committed
-    local       ==>|"init"| committed
-    other       ==>|"clone"| committed
-    committed   ==>|"push"| remote
-    remote      ==>|"pull"| committed
-
-    untracked["untracked
-        files"]
-
-    modified["modified
-        files"]
-
-    updated["updated
-        files"]
-
-    untracked   -->|"add"| cached
-    modified    -->|"add"| cached
-    remote      -->|"fetch"| updated
-    updated     -->|"merge"| modified
+    norm_dir    ===> |"init"| git_repo
+    other       ===> |"clone"| git_repo
+    local       ===> |"push"| remote
+    remote      ===> |"pull"| local
 ```
 
-<!--
+## From perspective of file
 ```mermaid
-sequenceDiagram
-    participant untracked files
-    participant cached area
-    participant modified files
-    participant updated files
-    participant local repository
-    participant remote repository
-    participant web repository
-    participant local directory
-
-    rect rgb(255, 205, 178)
-        Note right of local repository                  : create local repository
-        web repository      ->>local repository         : clone
-        local directory     ->>local repository         : init
+flowchart LR
+    subgraph work["Working Directory"]
+        untracked["untracked file"]
+        modified["modified file"]
     end
 
-    rect rgb(255, 180, 162)
-        Note right of untracked files                   : track & untrack files
-        untracked files     ->>cached area              : add
-        cached area         ->>untracked files          : rm --cached
+    subgraph stage["Staging Area"]
+        tracked["tracked file"]
     end
 
-    rect rgb(229, 152, 155)
-        Note right of cached area                       : modify tracked files
-        modified files      ->>cached area              : reset --staged (discard)
-        modified files      ->>cached area              : add (accept)
+    subgraph local["local repository"]
+        commit["committed file"]
     end
 
-    rect rgb(181, 131, 141)
-        Note right of cached area                       : archive files
-        cached area         ->>local repository         : commit
-        local repository    ->>remote repository        : push
-    end
-
-    rect rgb(109, 104, 117)
-        Note right of local repository                  : update local repository
-        remote repository   ->>local repository         : pull
-    end
-
-    rect rgb(109, 104, 117)
-        Note over modified files, local repository      : download updated files and merge with local files
-        remote repository   ->>updated files            : fetch
-        updated files       ->>modified files           : merge
-        modified files      ->>cached area              : add
-    end
-
-    rect rgb(181, 131, 141)
-        Note right of cached area                       : achive files
-        cached area         ->>local repository         : commit
-        local repository    ->>remote repository        : push
-    end
-```
--->
-
-
-# Local Repository
-
-## Check local repository status
-
-To check the status of local git repository, use the following command.
-```
-git status
+    untracked   ===> |"add"| tracked
+    modified    ===> |"add"| tracked
+    tracked     ===> |"modify"| modified
+    tracked     ===> |"restore"| untracked
+    stage       ===> |"commit"| local
+    commit      ===> |"modify"| modified
+    modified    ===> |"restore"| commit
 ```
 
-## Initialize a repository
 
-### Initialize a local directory
+# Git Repository
 
-To initialize a local working directory into a Git repository: 
+## Initialize a git repository
+
+### From a local directory
+
+To initialize a local working directory into a git repository: 
 ```
 cd <working_directory>
 git init
 ```
 
-### Clone an existing repository
+### From an existing repository
 
-To clone a existing repository from internet: 
+To clone an existing repository from internet: 
 ```
 git clone <repository_path> [<path>]
 ```
-If \<path\> is not specified, 
-a new working directory will be made with name of repository.
+If `<path>` is not specified, 
+a new working directory will be created to hold the repository.
+The new directory will be named as the same as the repository.
+
+
+## Check git repository status
+
+To check the status of git repository, use the following command.
+```
+git status
+```
 
 
 ## Delete local repository
 
-To delete a git local repository, directly delete `.git` directory by following commands or by
-manual operations.
+To delete a git repository from local disk, 
+directly delete `.git` directory by following commands or by manual operations.
 ```
 cd <target_directory>
 rm -rf .git
@@ -199,8 +165,9 @@ rm -rf .git
 
 ## Ignore specific files
 
-To ignore specific files while checking git status, add a file named `.gitignore` in local
-repository directory.
+To ignore specific files during checking git status, 
+add a file named `.gitignore` in local repository directory. 
+The `.gitignore` file specifies which files are intended to be ignored.
 
 For info about file ignorance method, check [github page](https://github.com/github/gitignore) 
 or 
@@ -209,10 +176,9 @@ or
 
 ## Record files
 
-### Add new files to cached area
+### Add new files to staging area
 
-To add current version of new files or modified files in the working directory to cached area, 
-use the following command.
+To add current version of untracked new files or modified files in the working directory to staging area: 
 ```
 git add <file>
 ```
@@ -220,24 +186,28 @@ git add <file>
 
 ### Commit files to local repository
 
-To commit files to local repository and save tracked files, use the following command.
+To commit files from staging area to local repository and save tracked files: 
 ```
 git commit
 ```
+
 After enter this command, a default editor will pop up and waits for a commit message.
-Without a commit message, commit will fail.
+The commit will fail without a commit message.
 
 To modify last commit (files or commit message):
 ```
 git commit --amend
 ```
+The command won't create a new commit. 
+However, if the last commit has been push to remote, 
+there will be a new commit generated.
 
 
 ## Recover files
 
-### Remove added files
+### Untrack files
 
-To move the **file** from cached area to working directory, use the following command.
+To move the **file** from staging area to working directory, use the following command.
 ```
 git rm --cached <file>
 ```
@@ -245,10 +215,7 @@ git rm --cached <file>
 
 ### Discard changes in working directory
 
-The following commands will dicard changes of the file in working directory. 
-Both commands will also reload the verison of the file in the search order of: 
-1. **cached area**
-2. **last commit**
+To dicard changes of the file in working directory: 
 ```
 git restore <modified_file>
 ```
@@ -256,11 +223,14 @@ OR
 ```
 git checkout -- <file>
 ```
+Both commands will reload the verison of the file in the search order of: 
+1. **staging area**
+2. **last commit**
 
 
-### Discard changes in cached area
+### Discard changes in staging area
 
-The following commands will move **changes** of the file from cached area to working directory. 
+To move **changes** of the file from staging area to working directory: 
 ```
 git restore --staged <modified_file>
 ```
@@ -268,18 +238,7 @@ OR
 ```
 git reset HEAD <file>
 ```
-
-## Compare files
-
-To display changes between working directory and the last commit:
-```
-git diff
-```
-
-To display changes between cached area and the last commit:
-```
-git diff --cached
-```
+The file will still be tracked by git after these commands.
 
 
 ## Remove files
@@ -296,12 +255,85 @@ git add <file>
 ```
 
 
+## Compare differences
+
+## View through command line
+The normal output format of `git diff`:
+```
+diff --git a/<file_a> b/<file_b>
+index <index_hash_of_file_a>..<index_hash_of_file_b> <filetype&authority>
+--- a/<file_a>
++++ b/<file_b>
+@@ -<start_line_number>,<total_number_of_lines> +<start_line_number>,<total_number_of_lines> @@
+ <same_content>
++<unique_content_in_file_b>
+ <same_content>
+ <same_content>
+-<unique_content_in_file_a>
+ <same_content>
+-<unique_content_in_file_a>
+-<unique_content_in_file_a>
++<unique_content_in_file_b>
+```
+
+To view differences of working directory and specific commit:
+```
+git diff [<commit>] [-- <path>]
+```
+where files in the commit will be marked as `a`, 
+files in the working directory as `b`.
+
+If there is a staged version of the files, 
+the files in staging area will be compared.
+Otherwise, the file in the last commit are compared.
+
+If a directory file path as `-- <path>` is not given, 
+all files will be compared.
+
+To view differences between staging area and the `<commit>`:
+```
+git diff --cached [<commit>] [-- <path>]
+```
+where files in the last commit will be marked as `a`, 
+files in staging area will be marked as `b`.
+
+To view differences between two commits:
+```
+git diff <commit_a> <commit_b> [-- path]
+```
+where files on `<commit_a>` will be marked as `a`,
+files in `<commit_b>` will be marked as `b`.
+
+To view differences between common ancestor of commits and `<commit_b>`: 
+```
+git diff --merge-base <commit_a> [<commit_b>] [-- <path>]
+```
+If only `<commit_a>` is given, 
+the differences between common ancestor of `<commit>` and HEAD will be displayed.
+
+
+## View through tool
+To view differences in an editor:
+```
+git difftool [-t=<tool>] <...>
+```
+where `<...>` are options like `git diff`.
+
+If the `[-t=<tool>]` is not given, 
+the default editor will be launched.
+
+To view available tools:
+```
+git difftool --tool-help
+```
+
+
 ## Clean
-To view results of clean:
+To view results of clean simulation:
 ```
 git clean --dry-run
 ```
-which is same as option `-n`.
+which is same as the option `-n`.
 
 To clean untracked files which are not ignored:
 ```
@@ -477,17 +509,27 @@ and divided by:
 
 Or use the interactive tool to handle merge conflicts:
 ```
-git mergetool
+git mergetool [-t=<tool>]
+```
+If the `-t=<editor>` is not given, 
+the default tool will be launched.
+
+For vim, the layout is explained and changed as shown in 
+[vimdiff](https://git-scm.com/docs/vimdiff/en)
+
+To view available tools:
+```
+git mergediff --tool-help
 ```
 
 
 ## Stash current changes
-To temporarily save current cached area and working directory for later recovery:
+To temporarily save current staging area and working directory for later recovery:
 ```
 git stash [push]
 ```
-After this command, the cached area and working directory will be clean as last commit.
-To stash cached area and not clean cached area add option `--keep-index`.
+After this command, the staging area and working directory will be clean as last commit.
+To stash staging area and not clean staging area add option `--keep-index`.
 To stash untracked files add option `-u` or `--include-untracked`, 
 and `-a` or `--all` to stash ignored files as well.
 
@@ -544,18 +586,18 @@ git rebase -i <base_branch>
 
 ## Reset
 To reset commit (move current branch to previous commit),
-but remain cached area and working directory of current commit:
+but remain staging area and working directory of current commit:
 ```
 git reset --soft <commit>
 ```
 
-To reset commit and cached area, 
+To reset commit and staging area, 
 but remain current working directory of current commit:
 ```
 git reset [--mixed] <commit>
 ```
 
-To reset commit, cached area, and working directory:
+To reset commit, staging area, and working directory:
 ```
 git reset --hard <commit>
 ```
