@@ -123,11 +123,9 @@ flowchart LR
 ```
 
 
-# Git Repository
+# Create a Git Repository
 
-## Initialize a git repository
-
-### From a local directory
+## From a local directory
 
 To initialize a local working directory into a git repository: 
 ```
@@ -135,7 +133,7 @@ cd <working_directory>
 git init
 ```
 
-### From an existing repository
+## From an existing repository
 
 To clone an existing repository from internet: 
 ```
@@ -169,14 +167,14 @@ To ignore specific files during checking git status,
 add a file named `.gitignore` in local repository directory. 
 The `.gitignore` file specifies which files are intended to be ignored.
 
-For info about file ignorance method, check [github page](https://github.com/github/gitignore) 
+For more info about file ignorance, check [github page](https://github.com/github/gitignore) 
 or 
 [Pro git](https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository).
 
 
-## Record files
+# Make a Commit
 
-### Add new files to staging area
+## Add new files to staging area
 
 To add current version of untracked new files or modified files in the working directory to staging area: 
 ```
@@ -184,14 +182,15 @@ git add <file>
 ```
 
 
-### Commit files to local repository
+## Commit files to local repository
 
 To commit files from staging area to local repository and save tracked files: 
 ```
 git commit
 ```
 
-After enter this command, a default editor will pop up and waits for a commit message.
+After enter this command, 
+a default editor will pop up and waits for a commit message.
 The commit will fail without a commit message.
 
 To modify last commit (files or commit message):
@@ -203,9 +202,9 @@ However, if the last commit has been push to remote,
 there will be a new commit generated.
 
 
-## Recover files
+# Recover Files
 
-### Untrack files
+## Untrack files
 
 To move the **file** from staging area to working directory, use the following command.
 ```
@@ -213,7 +212,7 @@ git rm --cached <file>
 ```
 
 
-### Discard changes in working directory
+## Discard changes in working directory
 
 To dicard changes of the file in working directory: 
 ```
@@ -228,7 +227,7 @@ Both commands will reload the verison of the file in the search order of:
 2. **last commit**
 
 
-### Discard changes in staging area
+## Discard changes in staging area
 
 To move **changes** of the file from staging area to working directory: 
 ```
@@ -241,7 +240,7 @@ git reset HEAD <file>
 The file will still be tracked by git after these commands.
 
 
-## Remove files
+# Remove Files
 
 To remove a committed file from next commit and working directory:
 ```
@@ -255,7 +254,7 @@ git add <file>
 ```
 
 
-## Compare differences
+# Compare Differences
 
 ## View through command line
 The normal output format of `git diff`:
@@ -276,14 +275,15 @@ index <index_hash_of_file_a>..<index_hash_of_file_b> <filetype&authority>
 +<unique_content_in_file_b>
 ```
 
-To view differences of working directory and specific commit:
+To view differences of files and specific commit:
 ```
 git diff [<commit>] [-- <path>]
 ```
 where files in the commit will be marked as `a`, 
 files in the working directory as `b`.
 
-If there is a staged version of the files, 
+If the `<commit>` is not given, 
+and there is a staged version of the files, 
 the files in staging area will be compared.
 Otherwise, the file in the last commit are compared.
 
@@ -328,7 +328,7 @@ git difftool --tool-help
 ```
 
 
-## Clean
+# Clean Redundant Files
 To view results of clean simulation:
 ```
 git clean --dry-run
@@ -344,70 +344,7 @@ with option `-x` to clean Git produced files which are ignored by default,
 with option `-X` to clean files ignored by Git
 
 
-# Submodule
-
-## Add submodule
-To add a repository into current local repository as submodule:
-```
-git submodule add <repository_path> [<path>]
-```
-If \<path\> is not specified, 
-the repository will be added to a new directory named the same as the repository.
-
-After adding a submodule, a `.gitmodules` file will be added.
-
-
-## Unregister submodule
-To unregister a submodule:
-```
-git submodule deinit <submodule>
-```
-
-
-## View submodule difference
-To view submodule differences add the option `--submodule` in `git diff` command.
-
-
-## Clone or pull a repository with submodule
-After cloning a repository or pulling a reposiroty with submodule, 
-use the following commands to clone the submodule repository: 
-```
-git submodule init
-git submodule update
-```
-Or
-```
-git submodule update --init
-```
-Add option `--init` for pulling is safe for new committed submodules to be  pulled.
-The option `--recurese-submodule` to update nested submodules.
-
-To clone a repository with its submodules at the same time: 
-```
-git clone --recurese-submodule <repository_path> [<path>]
-```
-
-
-## Update submodule
-Submodules can be updated by Git commands in the submodule directory. Or use the following command to updated with the default branch:
-```
-git submodule update --remote
-```
-
-
-## Push repository with submodules
-To safely push repositroy with submodules:
-```
-git push --recurse-submodule=check
-```
-
-
-## More info
-For more info about git submodule, check
-[submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
-
-
-# Commit management
+# Commit Management
 
 ## View commit history
 
@@ -438,6 +375,18 @@ To limit number of commit to be printed, use following options:
 |`-S`                       |only commits changing code matching the string     |
 |`--author`                 |only commits with matched author                   |
 |`committer`                |only commits with matched committer                |
+
+
+## Commit indexing
+
+
+## Show details of commit
+To show details of a commit:
+```
+git show <commit>
+```
+If `<commit>` is not given, 
+details of the HEAD commit will be displayed
 
 
 ## View branches
@@ -756,6 +705,69 @@ To manual set remote HEAD pointer:
 ```
 git remote set-head <remote> <branch>
 ```
+
+
+# Submodule
+
+## Add submodule
+To add a repository into current local repository as submodule:
+```
+git submodule add <repository_path> [<path>]
+```
+If \<path\> is not specified, 
+the repository will be added to a new directory named the same as the repository.
+
+After adding a submodule, a `.gitmodules` file will be added.
+
+
+## Unregister submodule
+To unregister a submodule:
+```
+git submodule deinit <submodule>
+```
+
+
+## View submodule difference
+To view submodule differences add the option `--submodule` in `git diff` command.
+
+
+## Clone or pull a repository with submodule
+After cloning a repository or pulling a reposiroty with submodule, 
+use the following commands to clone the submodule repository: 
+```
+git submodule init
+git submodule update
+```
+Or
+```
+git submodule update --init
+```
+Add option `--init` for pulling is safe for new committed submodules to be  pulled.
+The option `--recurese-submodule` to update nested submodules.
+
+To clone a repository with its submodules at the same time: 
+```
+git clone --recurese-submodule <repository_path> [<path>]
+```
+
+
+## Update submodule
+Submodules can be updated by Git commands in the submodule directory. Or use the following command to updated with the default branch:
+```
+git submodule update --remote
+```
+
+
+## Push repository with submodules
+To safely push repositroy with submodules:
+```
+git push --recurse-submodule=check
+```
+
+
+## More info
+For more info about git submodule, check
+[submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
 
 
 # Tagging
