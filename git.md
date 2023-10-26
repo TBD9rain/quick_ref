@@ -42,27 +42,37 @@ For more info, type `git config --help`.
 
 ## List configurations 
 
-Use the following command to display git configures. Add `--show-origin` option to display origin config file as well.
+To view git configures:
 
 ```
 git config --list
 ```
+Add option `--show-origin` to display origin config file as well.
 
 ## Set or unset variables
 
-`git config --add <var> <value>` set the variable in local config file where `--local` is optional. 
+To set a variable in local config file:
+```
+git config --add [--local | --global | --system] <var> <value>
+```
+Use option **`--local`**, **`--global`**, or **`--system`** 
+to set the variable in the specific config file. 
 
-`git config --unset <var>` unset the variable in local config file. 
+If range is not given, 
+the variable in local config file will be set.
 
-Add option *`--local`*, **`--global`**, or ***`--system`*** to operate in a specific level. 
+To delete a varaible:
+```
+git config --unset [--local | --global | --system] <var>
+```
 
-Configure user name and email in global config file (usually used) with following command:
+To configure user name and email in global config file (usually used): 
 ```
 git config --global user.name "USER NAME"
 git config --global user.email "MYEAMIAL@MINE.ME"
 ```
 
-Configure gvim as default editor for git:
+To configure gvim as default editor for git:
 ```
 git config --global core.editor "'<gvim_path>\gvim.exe' --nofork '%*'"
 ```
@@ -75,6 +85,7 @@ For all available configurations, type `git config --help` to view.
 # Git Work Flow
 
 ## From perspective of area
+
 ```mermaid
 flowchart LR
     norm_dir["Normal Directory"]
@@ -98,6 +109,7 @@ flowchart LR
 ```
 
 ## From perspective of file
+
 ```mermaid
 flowchart LR
     subgraph work["Working Directory"]
@@ -127,15 +139,15 @@ flowchart LR
 
 ## From a local directory
 
-To initialize a local working directory into a git repository: 
+To initialize a local directory into a git repository: 
 ```
-cd <working_directory>
+cd <local_directory>
 git init
 ```
 
 ## From an existing repository
 
-To clone an existing repository from internet: 
+To clone an existing repository from internet or a local path: 
 ```
 git clone <repository_path> [<path>]
 ```
@@ -146,20 +158,21 @@ The new directory will be named as the same as the repository.
 
 ## Check git repository status
 
-To check the status of git repository, use the following command.
+To check the status of git repository: 
 ```
 git status
 ```
+**This is the most often used command.**
 
 
 ## Delete local repository
 
-To delete a git repository from local disk, 
-directly delete `.git` directory by following commands or by manual operations.
+To delete a git repository from local disk: 
 ```
 cd <target_directory>
 rm -rf .git
 ```
+or directly delete `.git` directory by manual operations.
 
 ## Ignore specific files
 
@@ -176,7 +189,7 @@ or
 
 ## Add new files to staging area
 
-To add current version of untracked new files or modified files in the working directory to staging area: 
+To add current version of untracked files or modified files from working directory to staging area: 
 ```
 git add <file>
 ```
@@ -184,12 +197,12 @@ git add <file>
 
 ## Commit files to local repository
 
-To commit files from staging area to local repository and save tracked files: 
+To commit files from staging area to local repository and archive: 
 ```
 git commit
 ```
 
-After enter this command, 
+After execution of this command, 
 a default editor will pop up and waits for a commit message.
 The commit will fail without a commit message.
 
@@ -206,7 +219,7 @@ there will be a new commit generated.
 
 ## Untrack files
 
-To move the **file** from staging area to working directory, use the following command.
+To move a **file** from staging area to working directory, use the following command.
 ```
 git rm --cached <file>
 ```
@@ -214,7 +227,7 @@ git rm --cached <file>
 
 ## Discard changes in working directory
 
-To dicard changes of the file in working directory: 
+To dicard **changes** of the file in working directory: 
 ```
 git restore <modified_file>
 ```
@@ -222,7 +235,7 @@ OR
 ```
 git checkout -- <file>
 ```
-Both commands will reload the verison of the file in the search order of: 
+Both commands will reload the cached or archived verison of the file in the search order of: 
 1. **staging area**
 2. **last commit**
 
@@ -275,36 +288,36 @@ index <index_hash_of_file_a>..<index_hash_of_file_b> <filetype&authority>
 +<unique_content_in_file_b>
 ```
 
-To view differences of files and specific commit:
+To view differences of a file between specific commit and current working directory:
 ```
 git diff [<commit>] [-- <path>]
 ```
-where files in the commit will be marked as `a`, 
-files in the working directory as `b`.
+where the file in the commit will be marked as `a`, 
+the file in the working directory as `b`.
 
 If the `<commit>` is not given, 
-and there is a staged version of the files, 
-the files in staging area will be compared.
+and there is a staged version of the file, 
+the file in staging area will be compared.
 Otherwise, the file in the last commit are compared.
 
-If a directory file path as `-- <path>` is not given, 
+If a directory or a file path as `-- <path>` is not given, 
 all files will be compared.
 
-To view differences between staging area and the `<commit>`:
+To view differences of a file between the `<commit>` and staging area:
 ```
 git diff --cached [<commit>] [-- <path>]
 ```
-where files in the last commit will be marked as `a`, 
-files in staging area will be marked as `b`.
+where the file in the `<commit>` or the last commit will be marked as `a`, 
+and the file in staging area will be marked as `b`.
 
-To view differences between two commits:
+To view differences of a file between two commits:
 ```
 git diff <commit_a> <commit_b> [-- path]
 ```
-where files on `<commit_a>` will be marked as `a`,
-files in `<commit_b>` will be marked as `b`.
+where the file on `<commit_a>` will be marked as `a`,
+and the file in `<commit_b>` will be marked as `b`.
 
-To view differences between common ancestor of commits and `<commit_b>`: 
+To view differences of a file between common ancestor of commits and `<commit_b>`: 
 ```
 git diff --merge-base <commit_a> [<commit_b>] [-- <path>]
 ```
@@ -329,7 +342,7 @@ git difftool --tool-help
 
 
 # Clean Redundant Files
-To view results of clean simulation:
+To try clean simulation:
 ```
 git clean --dry-run
 ```
@@ -378,6 +391,14 @@ To limit number of commit to be printed, use following options:
 
 
 ## Commit indexing
+|Method                     |Which Commit                   |
+|:---                       |:---                           |
+|`<branch>`                 |last commit of `<branch>`      |
+|`<hash_value>`             |specific commit                |
+|`<partial_head_of_hash>`   |most matched commit            |
+|`HEAD`                     |where HEAD is pointed at       |
+|`HEAD^` or `HEAD~`         |previous commit of HEAD        |
+|`HEAD^<N>` or `HEAD~<N>`   |the previous N commit of HEAD  |
 
 
 ## Show details of commit
@@ -403,7 +424,7 @@ git branch -v
 To view merged or unmerged branches add option `--merged` or `--no-merged`.
 
 
-## Branch modifications
+## Branch operations
 To create a new branch:
 ```
 git branch <branch>
@@ -418,11 +439,12 @@ To delete a branch:
 ```
 git branch -d <branch>
 ```
-Replace `-d` with `-D` to forcibly delete a branch which hasn't been merge to other branch.
+Replace `-d` with `-D` to forcibly delete a branch which hasn't been merge to other branches.
 
 
 ## Checkout branches
-To checkout an existing branch (move `HEAD` pointer to another branch):
+To checkout an existing branch (move `HEAD` pointer to the branch, 
+and start to work on the branch):
 ```
 git checkout <branch>
 ```
@@ -434,19 +456,22 @@ git checkout -b <branch>
 
 
 ## Merge branches
-To merge current branch and target branch:
+To merge current branch with target branch:
 ```
-git merge <branch>
+git merge <target_branch>
 ```
 
-If the commit of the target branch is directly ahead of the commit of the current branch, the pointer of current branch will be move forward.
+If the last commit of the target branch is directly ahead of the commit of the current branch, 
+the pointer of current branch will be move forward.
 
-If the two branch diverged from older point, there will be a new commit merged by the current branch and the target branch.
+If the two branch diverged from an older point, 
+there will be a new commit merged by the current branch and the target branch.
 
-If there are conflicts between two branch, the git will give a hint. 
-The confilct should be resolved by modify the confilct files.
+If there are conflicts between two branch, 
+the git will give a hint. 
+Next, the confilct should be resolved by modify the confilct files.
 
-The confilct contents of different branches are marked by:
+The confilct texts of files from different branches are marked by:
 ```
 <<<<<<< <branch>:<file>
 <content>
@@ -455,6 +480,14 @@ and divided by:
 ```
 =======
 ```
+
+To abort merge operation:
+```
+git merge --abort
+```
+
+For more info about merge, check 
+[advanced merging](https://git-scm.com/book/en/v2/Git-Tools-Advanced-Merging)
 
 Or use the interactive tool to handle merge conflicts:
 ```
@@ -477,7 +510,8 @@ To temporarily save current staging area and working directory for later recover
 ```
 git stash [push]
 ```
-After this command, the staging area and working directory will be clean as last commit.
+After this command, 
+the staging area and working directory will be the same as the last commit.
 To stash staging area and not clean staging area add option `--keep-index`.
 To stash untracked files add option `-u` or `--include-untracked`, 
 and `-a` or `--all` to stash ignored files as well.
@@ -491,7 +525,7 @@ To load a specific stash:
 ```
 git stash apply [<stash>]
 ```
-If \<stash\> is not given, the last stash will be loaded.
+If `<stash>` is not given, the last stash will be loaded.
 
 To remove a specific stash from stash list:
 ```
@@ -514,7 +548,8 @@ To rebase current branch to a base branch:
 ```
 git rebase <base_branch>
 ```
-After this command, conflicts between commits need manual resolution with:
+After this command, 
+conflicts between commits need manual resolution with:
 ```
 git add <conflict_file>
 git rabase --continue
@@ -529,19 +564,20 @@ To rebase with more interactive options:
 ```
 git rebase -i <base_branch>
 ```
+where multiple options are available.
 `edit` cloud be used to modify commit messages.
 `squash` could be used to compress commits.
 
 
 ## Reset
 To reset commit (move current branch to previous commit),
-but remain staging area and working directory of current commit:
+but **remain current staging area and working directory** of current commit:
 ```
 git reset --soft <commit>
 ```
 
 To reset commit and staging area, 
-but remain current working directory of current commit:
+but **remain current working directory** of current commit:
 ```
 git reset [--mixed] <commit>
 ```
@@ -550,18 +586,27 @@ To reset commit, staging area, and working directory:
 ```
 git reset --hard <commit>
 ```
-***This command is dangerous, which will lose the commits after the \<commit\>.***
+***This command is dangerous, 
+which will lose the commits after the `<commit>`.***
 To undo this command, `reflog` is needed.
+For more info, check 
+[git reflog](https://git-scm.com/search/results?search=git-reflog).
 
 
 # Remote Repository
 
+## Set a ssh connection to github
+
+Check [github ssh](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/about-ssh).
+
+
 ## View remote path
 
-To view aliases of remote repositories configured for local repository:
+To view name of remote repositories configured for local git repository:
 ```
 git remote
 ```
+where names of remote repositories can be modified in local git repository.
 
 To display remote repositories and associated URLs:
 ```
@@ -614,6 +659,8 @@ To update records of remote branches:
 ```
 git remote update -p
 ```
+If the remote was updated but after the last communication with local,
+this command might be useful for further operations.
 
 
 ## Push
@@ -622,18 +669,17 @@ To push current branch to default remote branch:
 git push
 ```
 To force current branch to cover remote branch, add option `-f` or `--force`.
-`rebase` or `commit --amend` might need this option.
+Operations like `rebase` or `commit --amend` in local git repository might need this option
+to update to remote.
 ***Push forcibly with CAUTION.***
+Because this can't be reversed.
 
 To specify branches and remote repository:
 ```
 git push <remote> [<local_branch>[:<remote_branch>]]
 ```
-
-To push current branch and add upstream reference:
-```
-git push -u <remote> [<local_branch>[:<remote_branch>]]
-```
+add option `-u` to add upstream reference, 
+which will make `<local_branch>` to track `<remote_branch>`.
 
 To push all local branches:
 ```
@@ -651,7 +697,7 @@ To specify remote repository:
 git fetch <remote> <remote_branch>
 ```
 
-After fetch commits, manual merge is needed.
+After fetch new commits, manual merge is needed.
 
 
 ## Pull
@@ -664,10 +710,12 @@ which can be seemed as:
 git fetch
 git merge
 ```
+
 To specify branches and remote repository:
 ```
 git pull <remote> [<remote_branch>]
 ```
+
 To pull all remotes:
 ```
 git pull --all
@@ -686,7 +734,7 @@ If the remote branch can't be found, try ***update remote branch info***.
 Automatically, cloned branches and pushed branches 
 are tracked with corresponing remote branches.
 
-To manually set a remote upstream branch for current branch of local repository:
+To manually set a remote upstream branch for current branch:
 ```
 git branch -u <remote>/<remote_branch>
 ```
@@ -714,7 +762,7 @@ To add a repository into current local repository as submodule:
 ```
 git submodule add <repository_path> [<path>]
 ```
-If \<path\> is not specified, 
+If `<path>` is not specified, 
 the repository will be added to a new directory named the same as the repository.
 
 After adding a submodule, a `.gitmodules` file will be added.
@@ -752,7 +800,8 @@ git clone --recurese-submodule <repository_path> [<path>]
 
 
 ## Update submodule
-Submodules can be updated by Git commands in the submodule directory. Or use the following command to updated with the default branch:
+Submodules can be updated by Git commands in the submodule directory. 
+Or use the following command to updated with the default branch:
 ```
 git submodule update --remote
 ```
@@ -771,7 +820,7 @@ For more info about git submodule, check
 
 
 # Tagging
-One commit can hold multiple tags.
+One commit can have multiple tags.
 No repeative tags are allowed.
 
 
@@ -781,7 +830,8 @@ To view existing tags:
 git tag
 ```
 
-To list existing tags with match string, where `-l` is as the same as `-list`: 
+To list existing tags with match string, 
+where `-l` is as the same as `-list`: 
 ```
 git tag -l <string>
 ```
@@ -790,14 +840,17 @@ To add a tag to specific commit:
 ```
 git tag <tag> <commit>
 ```
-If \<commit\> is not given, the target commit is the last commit.
+If `<commit>` is not given, 
+the target commit is the last commit.
 
 To add a tag and annotations to specific commit:
 ```
 git tag -a <tag> <commit>
 ```
-If \<commit\> is not given, the target commit is the last commit.
-After execute the above command, the editor will pop up for annotating.
+If `<commit>` is not given, 
+the target commit is the last commit.
+After execute the above command, 
+the editor will pop up for annotating.
 
 To delete a tag:
 ```
@@ -806,7 +859,7 @@ git tag -d <tag>
 
 
 ## Remote tagging
-To share local a specific tag to remote repository:
+To share a local tag to remote repository:
 ```
 git push <remote> <tag>
 ```
@@ -816,9 +869,16 @@ To share all local tags to remote repository:
 git push <remote> --tags
 ```
 
-To delete a specific tag from remote repository:
+To delete a tag from remote repository:
 ```
 git push <remote> --delete <tag>
 ```
 
 
+# Other Functions
+- Search
+- Replace
+- Bundle
+- Signiture
+- Certification Management
+- ...
