@@ -49,19 +49,26 @@ git config --list
 ```
 Add option `--show-origin` to display origin config file as well.
 
-## Set or unset variables
+## Modify configurations
 
-To set a variable in local config file:
+To add a new configuration or modify an existing configuration:
+```
+git config [--local | --global | --system] <var> <value>
+```
+Use option **`--local`**, **`--global`**, or **`--system`** 
+to create or modify the configuration in the specific config file. 
+
+If range is not given, 
+the configuration in the local config file will be set.
+
+To forcibly add a new configuration:
 ```
 git config --add [--local | --global | --system] <var> <value>
 ```
-Use option **`--local`**, **`--global`**, or **`--system`** 
-to set the variable in the specific config file. 
+If the configuration is existing, 
+a same configuration will be added.
 
-If range is not given, 
-the variable in local config file will be set.
-
-To delete a varaible:
+To delete a configuration:
 ```
 git config --unset [--local | --global | --system] <var>
 ```
@@ -77,7 +84,11 @@ To configure gvim as default editor for git:
 git config --global core.editor "'<gvim_path>\gvim.exe' --nofork '%*'"
 ```
 
-Additionally, the git config file can be edited with editor.
+To open an editor to modify git configurations:
+```
+git config [--local | --global | --system] -e
+```
+Additionally, the git config file can be by editor out of git.
 
 For all available configurations, type `git config --help` to view.
 
@@ -135,6 +146,130 @@ flowchart LR
 ```
 
 
+## From perspective of commit
+```mermaid
+flowchart LR
+    subgraph C["Commit Node"]
+        c["commit size
+            tree tree_hash
+            author name
+            committer name
+            commit message"]
+    end
+
+    subgraph T["Tree Node"]
+        t["tree size
+            blob blob_hash0 file_name0
+            blob blob_hash1 file_name1"]
+    end
+
+    subgraph B0["Blob Node 0"]
+        b0["blob size
+            file_content"]
+    end
+
+    subgraph B1["Blob Node 1"]
+        b1["blob size
+            file_content"]
+    end
+
+    C --> T
+    T --> B0
+    T --> B1
+```
+
+```mermaid
+flowchart RL
+
+    subgraph C0["Commit 0"]
+        direction TB
+
+        c0["Commit Node"]
+
+        t0["Tree Node"]
+
+        b00["Bolb Node"] 
+
+        c0 --> t0
+        t0 --> b00
+    end
+
+    subgraph C1["Commit 1"]
+        direction TB
+
+        c1["Commit Node"]
+
+        t1["Tree Node"]
+
+        b10["Blob Node"]
+
+        b11["Blob Node"]
+
+        c1 --> t1
+        t1 --> b10
+        t1 --> b11
+    end
+
+    subgraph C2["Commit 2 (branch 0)"]
+        direction TB
+
+        c2["Commit Node"]
+
+        t2["Tree Node"]
+
+        b20["Blob Node"]
+
+        b21["Blob Node"]
+
+        c2 --> t2
+        t2 --> b20
+        t2 --> b21
+    end
+
+    subgraph C3["Commit 3 (branch 1)"]
+        direction TB
+
+        c3["Commit Node"]
+
+        t3["Tree Node"]
+
+        b30["Blob Node"]
+
+        b31["Blob Node"]
+
+        c3 --> t3
+        t3 --> b30
+        t3 --> b31
+    end
+
+    subgraph C4["Commit 4 (merged)"]
+        direction TB
+
+        c4["Commit Node"]
+
+        t4["Tree Node"]
+
+        b40["Blob Node"]
+
+        b41["Blob Node"]
+        
+        b42["Blob Node"]
+
+        c4 --> t4
+        t4 --> b40
+        t4 --> b41
+        t4 --> b42
+    end
+
+    C1 -->C0
+    C2 -->C1
+    C3 -->C1
+    C4 -->C2
+    C4 -->C3
+
+```
+
+
 # Create a Git Repository
 
 ## From a local directory
@@ -147,7 +282,7 @@ git init
 
 ## From an existing repository
 
-To clone an existing repository from internet or a local path: 
+To clone an existing repository from the internet or a local path: 
 ```
 git clone [-b <branch>] [--] <repository_path> [<path>]
 ```
@@ -183,16 +318,17 @@ To ignore specific files during checking git status,
 add a file named `.gitignore` in local repository directory. 
 The `.gitignore` file specifies which files are intended to be ignored.
 
-For more info about file ignorance, check [github page](https://github.com/github/gitignore) 
-or 
+For more info about file ignorance, check 
 [Pro git](https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository).
+or 
+[github page](https://github.com/github/gitignore) 
 
 
 # Make a Commit
 
 ## Add new files to staging area
 
-To add current version of untracked files or modified files from working directory to staging area: 
+To add current untracked files or modified files from working directory to staging area: 
 ```
 git add [--] <path>
 ```
@@ -206,7 +342,7 @@ git commit
 ```
 
 After execution of this command, 
-a default editor will pop up and waits for a commit message.
+a default editor will pop up and waits for a commit message being entered.
 The commit will fail without a commit message.
 
 To modify last commit (files or commit message):
@@ -214,7 +350,7 @@ To modify last commit (files or commit message):
 git commit --amend
 ```
 The command won't create a new commit. 
-However, if the last commit has been push to remote, 
+However, if the last commit has been **pushed** to remote, 
 there will be a new commit generated.
 
 
@@ -230,17 +366,19 @@ git rm --cached [--] <path>
 
 ## Discard changes in working directory
 
-To dicard **changes** of the files in working directory: 
+To discard **changes** of the files in working directory: 
 ```
 git restore [--] <path>
 ```
-OR
+or
 ```
 git checkout [--] <path>
 ```
 Both commands will reload the cached or archived verison of the files in the search order of: 
 1. **staging area**
 2. **last commit**
+
+The files will still be tracked by git after these commands.
 
 
 ## Discard changes in staging area
@@ -249,7 +387,7 @@ To move **changes** of the files from staging area to working directory:
 ```
 git restore --staged [--] <path>
 ```
-OR
+or
 ```
 git reset HEAD [--] <path>
 ```
@@ -272,7 +410,7 @@ git add <file>
 
 # Compare Differences
 
-## View through command line
+## View within command line
 
 The normal output format of `git diff`:
 ```
@@ -302,9 +440,9 @@ the file in the working directory as `b`.
 If the `<commit>` is not given, 
 and there is a staged version of the file, 
 the file in staging area will be compared.
-Otherwise, the file in the last commit are compared.
+Otherwise, the file in the last commit will be compared.
 
-If a directory or a file path as `-- <path>` is not given, 
+If a directory or a file path as `[--] <path>` is not given, 
 all files will be compared.
 
 To view differences of a file between the `<commit>` and staging area:
@@ -329,7 +467,7 @@ If only `<commit_a>` is given,
 the differences between common ancestor of `<commit>` and HEAD will be displayed.
 
 
-## View through tool
+## View with editor tool
 
 To view differences in an editor:
 ```
@@ -348,11 +486,11 @@ git difftool --tool-help
 
 # Clean Redundant Files
 
-To try clean simulation:
+To simulate a clean operation:
 ```
 git clean --dry-run
 ```
-which is same as the option `-n`.
+`--dry-run` is identical to the option `-n`.
 
 To clean untracked files which are not ignored:
 ```
@@ -473,7 +611,7 @@ git merge <target_branch>
 ```
 
 If the last commit of the target branch is directly ahead of the commit of the current branch, 
-the pointer of current branch will be move forward.
+the pointer of current branch will be move forward (fast-forward mode).
 
 If the two branch diverged from an older point, 
 there will be a new commit merged by the current branch and the target branch.
@@ -486,6 +624,11 @@ The confilct texts of files from different branches are marked by:
 ```
 <<<<<<< <branch>:<file>
 <content>
+```
+and
+```
+<content>
+>>>>>>> <branch>:<file>
 ```
 and divided by:
 ```
@@ -500,7 +643,7 @@ git merge --abort
 For more info about merge, check 
 [advanced merging](https://git-scm.com/book/en/v2/Git-Tools-Advanced-Merging)
 
-Or use the interactive tool to handle merge conflicts:
+To use the interactive tool to handle merge conflicts:
 ```
 git mergetool [-t=<tool>]
 ```
@@ -512,7 +655,7 @@ For vim, the layout is explained and changed as shown in
 
 To view available tools:
 ```
-git mergediff --tool-help
+git mergetool --tool-help
 ```
 
 
@@ -538,10 +681,10 @@ To load a specific stash:
 git stash apply [--index] [<stash>]
 ```
 If `<stash>` is not given, the last stash will be loaded.
-**The `<stash>` in powershell should be with in single quotation marks.**
+**The `<stash>` in powershell should be embraced by single quotation marks.**
 
 Option `--index` is recommended. 
-**Without `--index` the unstaged changes of tracked files will be staged after `stash apply`.**
+**Without `--index` the unstaged changes of tracked files will be staged automatically after `stash apply`.**
 
 To remove a specific stash from stash list:
 ```
@@ -566,7 +709,7 @@ To rebase current branch to a base branch:
 git rebase <base_branch>
 ```
 After this command, 
-conflicts between commits need manual resolution with:
+conflicts between commits need manual resolution and:
 ```
 git add <conflict_file>
 git rabase --continue
@@ -589,13 +732,13 @@ where multiple options are available.
 ## Reset
 
 To reset commit (move current branch to previous commit),
-but **remain current staging area and working directory** of current commit:
+but **remain current staging area and working directory**:
 ```
 git reset --soft <commit>
 ```
 
 To reset commit and staging area, 
-but **remain current working directory** of current commit:
+but **remain current working directory**:
 ```
 git reset [--mixed] <commit>
 ```
@@ -615,16 +758,15 @@ For more info, check
 
 ## Set a ssh connection to github
 
-Check [github ssh](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/about-ssh).
+Check [github authentication with ssh](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/about-ssh).
 
 
-## View remote path
+## View remote repositories
 
 To view name of remote repositories configured for local git repository:
 ```
 git remote
 ```
-where names of remote repositories can be modified in local git repository.
 
 To display remote repositories and associated URLs:
 ```
@@ -644,7 +786,7 @@ To add a remote repository:
 git remote add <remote> <url>
 ```
 
-To rename a remote repository:
+To rename a remote repository in local remote list:
 ```
 git remote rename <old_name> <new_name>
 ```
@@ -679,7 +821,7 @@ To update records of remote branches:
 ```
 git remote update -p
 ```
-If the remote was updated but after the last communication with local,
+If the remote repository was updated after the last communication with local,
 this command might be useful for further operations.
 
 
@@ -692,8 +834,9 @@ git push
 To force current branch to cover remote branch, add option `-f` or `--force`.
 Operations like `rebase` or `commit --amend` in local git repository might need this option
 to update to remote.
+
 ***Push forcibly with CAUTION.***
-Because this can't be reversed.
+Because this is difficult to reverse in remote repository.
 
 To specify branches and remote repository:
 ```
@@ -751,19 +894,19 @@ To copy a remote branch and checkout it:
 ```
 git checkout -t <remote>/<remote_branch>
 ```
-If the remote branch can't be found, try ***update remote branch info***.
+If the remote branch can't be found, try ***update remote branch info*** above.
 
 
 ## Track branch
 
 Automatically, cloned branches and pushed branches 
-are tracked with corresponing remote branches.
+are tracked with corresponding remote branches.
 
 To manually set a remote upstream branch for current branch:
 ```
 git branch -u <remote>/<remote_branch>
 ```
-If the remote branch can't be found, try ***update remote branch info***.
+If the remote branch can't be found, try ***update remote branch info*** above.
 
 
 ## Delete remote branch
@@ -793,7 +936,8 @@ git submodule add <repository_path> [<path>]
 If `<path>` is not specified, 
 the repository will be added to a new directory named the same as the repository.
 
-After adding a submodule, a `.gitmodules` file will be added.
+After adding a submodule, a `.gitmodules` file will be added, 
+which records the submodule information.
 
 
 ## Unregister submodule
@@ -821,12 +965,12 @@ Or
 ```
 git submodule update --init
 ```
-Add option `--init` for pulling is safe for new committed submodules to be  pulled.
-The option `--recurese-submodule` to update nested submodules.
+Add option `--init` for pulling is safe for new committed submodules to be pulled.
+The option `--recursive` to update nested submodules.
 
 To clone a repository with its submodules at the same time: 
 ```
-git clone --recurese-submodule <repository_path> [<path>]
+git clone --recures-submodule <repository_path> [<path>]
 ```
 
 ***If the access to remote repository of submodule is denied, 
@@ -851,12 +995,12 @@ To safely push repositroy with submodules:
 ```
 git push [--recurse-submodule=check]
 ```
-The option `--recurse-submodule=check` checks whether the submodules has pushed to remote.
+The option `--recurse-submodule=check` checks whether the submodules has been pushed to remote.
 
 
 ## Submodule iteration
 
-To iterate commands in submodules:
+To iteratively execute commands in submodules:
 ```
 git submodule foreach '<git_command>'
 ```
@@ -871,7 +1015,7 @@ For more info about git submodule, check
 # Tagging
 
 One commit can have multiple tags.
-No repeative tags are allowed.
+Tags should have unique names.
 
 
 ## Local tagging
@@ -901,7 +1045,7 @@ git tag -a <tag> <commit>
 If `<commit>` is not given, 
 the target commit is the last commit.
 After execute the above command, 
-the editor will pop up for annotating.
+an editor will pop up for annotating.
 
 To show tag and annotations:
 ```
@@ -932,7 +1076,7 @@ git push <remote> --delete <tag>
 ```
 
 
-# Other Functions
+# Other Git Functions
 
 - Search
 - Replace

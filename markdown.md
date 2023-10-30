@@ -1,10 +1,10 @@
 # Introduction
 
-This is a quick reference for markdown syntax in **vim & github**.
-
-For more info about markdown in vim, visit [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim)
+This is a quick reference for markdown syntax in **github & vim**.
 
 For more info about markdown in github, visit [markdown docs](https://docs.github.com/zh/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/quickstart-for-writing-on-github)
+
+For more info about markdown in vim, visit [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim)
 
 
 # Heading
@@ -190,7 +190,7 @@ The code words and code phrases could be decorated with text decorations.
 
 - *`Italic`*
 - **`Bold`**
-- ***`Italic and Blod`***
+- ***`Italic and Bold`***
 - ~~`Crossed`~~
 - `Text`<sub>`subscript`</sub>
 - `Text`<sup>`supscript`</sup>
@@ -304,5 +304,5 @@ For more info, visit [Mermaid on Github](https://github.com/mermaid-js/mermaid/t
 
 # Others
 
-Kates and so on ...
+KaTeX and so on ...
 
