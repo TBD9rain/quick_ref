@@ -22,6 +22,7 @@ For windows:
 
 The usage of **Git commands** in windows command line is the focus of this ref.
 
+
 # Configure Git
 
 There are three Git config files in different levels and different disk locations to configure Git. 
@@ -40,6 +41,7 @@ Three Git config files windows 10:
 
 For more info, type `git config --help`.
 
+
 ## List configurations 
 
 To view git configures:
@@ -48,6 +50,7 @@ To view git configures:
 git config --list
 ```
 Add option `--show-origin` to display origin config file as well.
+
 
 ## Modify configurations
 
@@ -119,6 +122,7 @@ flowchart LR
     remote      ===> |"pull"| local
 ```
 
+
 ## From perspective of file
 
 ```mermaid
@@ -146,7 +150,8 @@ flowchart LR
 ```
 
 
-## From perspective of commit
+## From perspective of node connections
+
 ```mermaid
 flowchart LR
     subgraph C["Commit Node"]
@@ -177,6 +182,9 @@ flowchart LR
     T --> B0
     T --> B1
 ```
+
+
+## From perspective of commit
 
 ```mermaid
 flowchart RL
@@ -280,6 +288,7 @@ cd <local_directory>
 git init
 ```
 
+
 ## From an existing repository
 
 To clone an existing repository from the internet or a local path: 
@@ -311,6 +320,7 @@ cd <target_directory>
 rm -rf .git
 ```
 or directly delete `.git` directory by manual operations.
+
 
 ## Ignore specific files
 
@@ -532,6 +542,7 @@ To limit number of commit to be printed, use following options:
 |`-S`                       |only commits changing code matching the string     |
 |`--author`                 |only commits with matched author                   |
 |`committer`                |only commits with matched committer                |
+
 
 ## Commit indexing
 
@@ -1084,3 +1095,5 @@ git push <remote> --delete <tag>
 - Signiture
 - Certification Management
 - ...
+
+

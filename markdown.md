@@ -1,15 +1,16 @@
 # Introduction
 
-This is a quick reference for markdown syntax in **github & vim**.
-
-For more info about markdown in github, visit [markdown docs](https://docs.github.com/zh/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/quickstart-for-writing-on-github)
+This is a quick reference for markdown syntax in **vim & github**.
 
 For more info about markdown in vim, visit [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim)
+
+For more info about markdown in github, visit [markdown docs](https://docs.github.com/zh/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/quickstart-for-writing-on-github)
 
 
 # Heading
 
 There are 6 header levles as following:
+
 
 # Heading level 1
 
@@ -56,6 +57,7 @@ Invisible texts
 
 Texts in list items can be decorated.
 
+
 ## Unordered list
 
 Use `*`, `+`, or `-` to create an unordered list.
@@ -83,6 +85,7 @@ Use `*`, `+`, or `-` to create an unordered list.
 ```
 * List C, item 1
 
+
 ## Ordered list
 
 Use numbers followed by a `.` to create an ordered list.
@@ -100,6 +103,7 @@ Use numbers followed by a `.` to create an ordered list.
 2. list item 2
 3. list item 3
     1. list itme 3.1
+
 
 ## Task list
 
@@ -172,11 +176,13 @@ Reference can be nested in another reference.
 > - **However**
 >> 1. Don't do too more -- Lingwei
 
+
 # Split Line
 
 Use **three** `*`, `-`, or `_` in a single line to insert a split line:
 
 ---
+
 
 # Code
 
@@ -194,6 +200,7 @@ The code words and code phrases could be decorated with text decorations.
 - ~~`Crossed`~~
 - `Text`<sub>`subscript`</sub>
 - `Text`<sup>`supscript`</sup>
+
 
 ## Code block
 
@@ -269,7 +276,8 @@ For list of all available emojis, visit [emoji list](https://github.com/ikatyang
 # Mermaid
 
 Mermaid Introduction: 
-> Mermaid is a JavaScript-based diagramming and charting tool that uses Markdown-inspired text definitions and a renderer to create and modify complex diagrams. --README of Mermaid
+> Mermaid is a JavaScript-based diagramming and charting tool that uses Markdown-inspired text definitions and a renderer to create and modify complex diagrams. 
+> --README of Mermaid
 
 Mermaid could be used to quickly create: 
 - [flowcharts](http://mermaid.js.org/syntax/flowchart.html)
@@ -302,7 +310,35 @@ flowchart LR
 For more info, visit [Mermaid on Github](https://github.com/mermaid-js/mermaid/tree/develop) and [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim).
 
 
+# KaTeX
+
+> KaTeX is a cross-browser JavaScript library that displays mathematical notation in web browsers.
+> -- Wikipedia
+
+Enclose KaTeX codes between two `$` to create a math notation in the text line. 
+`$f(x)=x$` is displayed as $f(x)=x$. 
+
+Enclose KaTeX codes between two `$$` to create a math notation alone in a line.
+
+```
+$$
+f(x)=x
+$$
+```
+
+The above codes are displayed as following. 
+
+$$
+f(x)=x
+$$
+
+For full list of supported math notations in KaTeX, 
+visit [KaTeX docs](https://katex.org/docs/supported).
+
+
 # Others
 
-KaTeX and so on ...
+For other functions, 
+visit [markdown-preview.nvim](https://github.com/iamcco/markdown-preview.nvim).
+
 

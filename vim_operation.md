@@ -17,6 +17,7 @@
 |RR                 |Register Record    |
 |PS                 |Pattern Substitute |
 
+
 # General Commands
 
 |Command                |Mode                       |Description                                        |
@@ -32,6 +33,7 @@
 |`:w[q]`                |N                          |save [and exit vim]                                |
 |`sa[veas] {file_path}` |N                          |save as \<file\_path\>                             |
 |`:q!`                  |N                          |force exit without save                            |
+
 
 # Cursor Moving Commands
 
@@ -55,6 +57,7 @@
 |`[N]gg`        |N      |to line N, default: first line             |
 |`[N]G`         |N      |to line N, default: last line              |
 |`:[N]`         |N      |to line N                                  |
+
 
 # Editing Commands in Normal Mode
 
@@ -87,6 +90,7 @@
 |`[N]p`         |N                  |paste text in default register after the cursor for N times                            |
 |`[N]P`         |N                  |paste text in default register before the cursor for N times                           |
 
+
 # Commands for Visual Mode
 
 |Command        |Mode                   |Description                                                                            |
@@ -100,6 +104,7 @@
 |`r{char}`      |V, VB, VL              |replace selected texts with {char}                                                     |
 |`c`            |VB $\rightarrow$ I     |delete selected texts, enter insert mode and insert same {text} for each selecetd line |
 |`y`            |V, VB, VL              |copy selected texts                                                                    |
+
 
 # Commands in Insert Mode
 
@@ -117,6 +122,7 @@
 |`<Ctrl>-Y`                 |I          |insert character above the cursor                                                      |
 |`<Ctrl>-E`                 |I          |insert character below the cursor                                                      |
 
+
 # Commands for Completion Mode
 
 |Command        |Mode                   |Description                                                                    |
@@ -130,6 +136,7 @@
 |`<Ctrl>-P`     |X                      |keyword local compeltion; previous match item wihle selecting                  |
 |`<Ctrl>-N`     |X                      |keyword local compeltion; next match item wihle selecting                      |
 
+
 # Commands about Register
 
 |Command                |Mode   |Description                                                            |
@@ -142,6 +149,7 @@
 |`[N]@{a-z}`            |N      |execute contents in register {a-z} like keyboard input for N times     |
 
 Use command **`:help registers`** in vim to view descriptions for all registers.
+
 
 # Pattern Search Commands
 
@@ -159,6 +167,7 @@ Use command **`:help registers`** in vim to view descriptions for all registers.
 |`[N]N`                     |N      |repeat last search in opposite direction for N times                               |
 
 Use command **`:help pattern`** in vim to view available pattern expressions.
+
 
 # Pattern Substitute Commands
 
@@ -199,6 +208,7 @@ Repeat last substitute command with new [flag].
 Use command `:help substitute` in vim to view more information.
 Use command `:help pattern` in vim to view available pattern expressions.
 
+
 # Tab Page Commands
 
 |Command                    |Mode   |Description                                                        |
@@ -209,6 +219,7 @@ Use command `:help pattern` in vim to view available pattern expressions.
 |`:tab[close]`              |N      |close current tab page                                             |
 |`:tabo[nly]`               |N      |close all tab pages except current page                            |
 |`:tabm[ove]`               |N      |move current tab page to after page N, or use **mouse** to drag    |
+
 
 # Fold Commands
 
@@ -227,4 +238,5 @@ Use command `:help pattern` in vim to view available pattern expressions.
 |`zR`           |N          |open all folds in current window           |
 |`zm`           |N          |increase folding                           |
 |`zM`           |N          |Close all folds in current window          |
+
 
