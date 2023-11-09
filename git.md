@@ -616,7 +616,7 @@ git checkout -b <branch>
 
 ## Merge branches
 
-To merge current branch with target branch:
+To merge current branch **with (not to)** target branch:
 ```
 git merge <target_branch>
 ```
@@ -627,9 +627,9 @@ the pointer of current branch will be move forward (fast-forward mode).
 If the two branch diverged from an older point, 
 there will be a new commit merged by the current branch and the target branch.
 
-If there are conflicts between two branch, 
-the git will give a hint. 
-Next, the confilct should be resolved by modify the confilct files.
+During a merge, among changes from different sides made to the common ancestor, 
+**changes made to different areas** in sides will be incorporated in the final result.
+When both sides **made changes to the same area**, Git will report a confilct.
 
 The confilct texts of files from different branches are marked by:
 ```
@@ -715,7 +715,7 @@ git stash branch <branch> [<stash>]
 
 ## Rebase
 
-To rebase current branch to a base branch:
+To rebase current branch **to (not with)** a base branch:
 ```
 git rebase <base_branch>
 ```
