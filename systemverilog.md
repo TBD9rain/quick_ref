@@ -41,6 +41,8 @@ The default value of `logic` variables is `x`.
 meanwhile with **continuous assignments and procedural assignments**. 
 However, `logic` can be driven by only 1 source.
 
+`integer i0` is as the same as `bit signed [31: 0] i0;`.
+
 
 ### 2-state variables
 
@@ -52,6 +54,8 @@ However, `logic` can be driven by only 1 source.
 |`shortint` |16         |signed         |                                   |
 |`longint`  |64         |signed         |                                   |
 
+`byte b0;` is as the same as `bit signed [ 7: 0] b0;`.
+
 
 ### String
 
@@ -61,6 +65,13 @@ The length of a `string` variable is the number of characters in the collection.
 `string` variables are dynamic as their length may vary during simulation. 
 A single character in a `string` variable could be selected. 
 A single character in a `string` variable is of `byte`. 
+
+Available methods: 
+- `Len()`
+- `Compare()`
+- `Toupper()`
+- `Tolower()`
+- ...
 
 
 ## Data structure
@@ -77,6 +88,94 @@ bit     [ 3: 0] [ 7: 0] b2;             //  packed array, multidimensional
 real                    r1  [ 7: 0];    //  unpacked array
 logic   [ 7: 0]         l1  [ 3: 0];    //  unpacked array
 ```
+
+A packed array is guaranteed to be represented as a contiguous set of bits, 
+an unpacked array may or may not be so represented. 
+
+A one-dimenional packed array is often referred to as a vector. 
+Multidimensional packed arrays are also allowed. 
+
+Unpacked arrays may be fixed-size array, dynamic array, associative array, or queues.
+
+If a packed array is declared as signed, 
+the array viewed as a single vector is signed. 
+The individual elements of the array are unsigned unless they are of a named type declared as signed. 
+If an unpacked array is declared as signed, 
+this applies to all individual elements of the array. 
+
+
+#### Fixed-size array
+
+A fixed-size array shall be represented by an address range.
+The following declarations are equivalent. 
+
+```systemverilog
+int     arr [ 0: 7] [0:15];
+int     arr [8]     [32];
+```
+
+
+#### Dynamic array
+
+The size of a dynamic array can be set or changed at run time. 
+The default size of an uninitialized dynamci array is zero. 
+Any unpacked dimension in an array declaration may be a dynamic array dimension.
+A delcaration example: 
+```systemverilog
+bit     [15: 0] b0 [];
+```
+
+The **`new []`** constructor is used to set or change the size of the dynamic array. 
+It may appear in place of the right-hand side expression of variable declaration assignments 
+and blocking procedural assignments when the left-hand side indicates a dynamic array. 
+
+```systemverilog
+int     arr1[], arr2[2][][], src[3], dest1[], dest2[];
+
+arr             = new[4];           //  initialized with default int values
+arr2[0]         = new[4];           //  dynamic subarray arr[0] sized to length 4
+arr2[0][]       = new[2];           //  dynamic subarray arr[0][0] sized to length 2
+arr2[1][0]      = new[2];           //  illegal, arr2[1] not initialized
+arr2[0][]       = new[2];           //  illegal, syntax error
+arr2[0][1][1]   = new[2];           //  illegal, arr2[0][1][1] is an int element
+src             = '{2, 3, 4};
+dest1           = new[2] (arr);     //  dest1 is {2, 3}
+dest2           = new[4] (arr);     //  dest2 is {2, 3, 4, 0}, appended with default int value
+dest2           = new[8] (dest2);   //  doubled dest2 size and remained values.
+```
+
+Available built-in methods: 
+- `size()`, returns the size of the dynamic array. 
+- `delete()`, clears all elements of the dynamic array and yield an empty array. 
+
+
+### Associated array
+
+
+### Queue
+
+
+### Array assignment
+
+Array assignments rules: 
+- The element types of source and target shall be equivalent.
+- If the target is a fixed-size array, 
+the size of both assignment side should be equicalent.
+
+
+### Multidimensional arrays
+
+A multidimensional array is an array of arrays. 
+A multidimensional array delcaration example: 
+
+```systemverilog
+bit     [ 3: 0] [ 7: 0]     b0  [ 0: 9];
+```
+
+The dimensions preceding the identifier set the packed dimensions (`[ 3: 0] [ 7: 0]`).
+The dimensions following the identifier set the unpacked dimension (`[ 0: 9]`).
+When referenced, the packed dimensions follow the unpacked dimensions. 
+The rightmost dimension varies most rapidly and is the first to be omitted. 
 
 
 ### Structure
