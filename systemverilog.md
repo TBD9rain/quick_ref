@@ -21,11 +21,12 @@ SystemVerilog value set consists of four basic values:
 - `x`, an unkown logic value
 - `z`, a high-impedance state
 
-Data types are categorized as either singolar or aggregate. 
+Data types are categorized as either singular or aggregate. 
 A singular variable or expression represents a single value, symbol, or handle. 
 An aggregate varibale or expression represents a set or collection of singular values. 
 Unpacked structure, unpacked union, or unpacked array are of aggregated vraibles. 
 Others are of singular variables. 
+
 
 ## Basic data types
 
@@ -67,11 +68,14 @@ A single character in a `string` variable could be selected.
 A single character in a `string` variable is of `byte`. 
 
 Available methods: 
-- `Len()`
-- `Compare()`
-- `Toupper()`
-- `Tolower()`
+- `len()`
+- `compare()`
+- `toupper()`
+- `tolower()`
 - ...
+
+
+### Enumeration
 
 
 ## Data structure
@@ -138,7 +142,8 @@ arr2[0][]       = new[2];           //  dynamic subarray arr[0][0] sized to leng
 arr2[1][0]      = new[2];           //  illegal, arr2[1] not initialized
 arr2[0][]       = new[2];           //  illegal, syntax error
 arr2[0][1][1]   = new[2];           //  illegal, arr2[0][1][1] is an int element
-src             = '{2, 3, 4};
+
+src             = '{2, 3, 4};       //  the ' is necessary
 dest1           = new[2] (arr);     //  dest1 is {2, 3}
 dest2           = new[4] (arr);     //  dest2 is {2, 3, 4, 0}, appended with default int value
 dest2           = new[8] (dest2);   //  doubled dest2 size and remained values.
@@ -149,13 +154,56 @@ Available built-in methods:
 - `delete()`, clears all elements of the dynamic array and yield an empty array. 
 
 
-### Associated array
+#### Associative array
+
+Associative array is a good option for the data collection with unknown size or sparse data space.  
+
+An associative array implements a lookup table of the elements of its declared type. 
+The declaration should be like: 
+```
+<data_type> <array_name> [<index_type>];
+```
+
+Wildcard index type like `<data_type> <array_nme> [*]` may be indexed by any integral expression 
+
+Available built-in methods: 
+- `num()` and `size()`
+- `delete([<index>])`
+- `exists(<index>)`, checks whether an element exists at the specifed `<index>`. 
+- `first(<variable_name>)`, assigns to the `<variable_name>` the value of the first (smallest) index in the associative array 
+- `last(<variable_name>)`, assigns to the `<variable_name>` the value of the last (largest) index in the associative array
+- `next(<index>)`, returns the smallest index whose value is greater than th given `<index>` 
+- `prev(<index>)`, returns the largest index whose value is smaller than th given `<index>` 
 
 
-### Queue
+
+#### Queue
+
+A queue is a dynamic ordered collection of homogeneous elements. 
+A queue supports constatnt-time access to all its elements. 
+Each elements in a queue is identified by a ordinal number that represents its position within the queue, 
+with `0` representing the first, and `$` representing the last. 
+Queues can be manipulated using the indexing, concatenation, slicing operator syntax, and equality operators. 
+
+```systemverilog
+byte        q1  [$];                //  a queue of bytes
+integer     q2  [$] == {2, 3, 9}    //  an initialized queue of integers
+bit         q3  [$:255];            //  a queue of bit with maximum size of 256
+```
+
+Available built-in methods: 
+- `size()`, returns the size of the dynamic array. 
+- `insert(<queue_index>, <element>)`, 
+insert `<element>` before the `<queue_index>` element
+- `delete([<queue_index>])`, delete the `<queue_index>` element.
+If `<queue_index>` is not specified, the whole queue will be deleted. 
+- `push_front(<element>)`
+- `pop_front()`
+- `push_back(<element>)`
+- `pop_back()`
 
 
-### Array assignment
+#### Array assignment
 
 Array assignments rules: 
 - The element types of source and target shall be equivalent.
@@ -163,7 +211,7 @@ Array assignments rules:
 the size of both assignment side should be equicalent.
 
 
-### Multidimensional arrays
+#### Multidimensional arrays
 
 A multidimensional array is an array of arrays. 
 A multidimensional array delcaration example: 
@@ -178,6 +226,71 @@ When referenced, the packed dimensions follow the unpacked dimensions.
 The rightmost dimension varies most rapidly and is the first to be omitted. 
 
 
+#### Array manipulation methods
+
+Systemverilog provides several built-in methods for arrays. 
+```
+<array_name>.<array_method>[(<iterator_argumemt>)] [with (<expression>)]
+```
+
+The `with` clause filter or pre-process elements according to `<expression>`. 
+
+
+##### Array locator methods
+
+Array locator methods operate on any unpacked array and return a queue. 
+Array locator methods traverse the array in an unspecified order. 
+
+`with` clause is mandatory as a filter in following methods: 
+- `find() with(<expression>)`
+- `find_index() with(<expression>)`
+- `find_first() with(<expression>)`
+- `find_first_index() with(<expression>)`
+- `find_last() with(<expression>)`
+- `find_last_index() with(<expression>)`
+
+`with` clause is optional in following methods: 
+- `min()`
+- `max()`
+- `unique()`
+- `unique_index()`
+
+
+##### Array ordering methods
+
+Array ordering methods reorder elements of arrays except for associative array. 
+
+Array ordering methods consist of: 
+- `reverse()`
+- `sort()`
+- `rsort()`
+- `shuffle()`
+
+
+##### Array reduction methods
+
+Array reduction methods are used to reduce the array to a single value. 
+The `with` clause is used to pre-process elements before reduction operations. 
+
+Array reduction methods consist of: 
+- `sum()`
+- `product()`
+- `and()`
+- `or()`
+- `xor()`
+
+
+##### Iterator index querying
+
+`index(<dimension>)` returns the index of elements in arrays 
+during array manipulation iterations.
+
+
+#### Foreach-loop
+
+`foreach` loop is useful in arrays processing. 
+
+
 ### Structure
 
 A structure represents a collection of data types that can be referenced as a whole, 
@@ -189,4 +302,11 @@ Unpacked structures can contain any data type.
 A packed structure consisits of bit fiels, which are packed together in memory without gaps.
 An unpacked structure has an implementation-dependent packing, normally matching C compiler.
 When a packed structure appears as a primary, it should be treated as a single vector.
+
+
+### Union
+
+
+## User defined data type
+
 
