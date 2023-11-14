@@ -77,6 +77,31 @@ Available methods:
 
 ### Enumeration
 
+An enumeration type declares a set of integral named constants, 
+which can be declared as following: 
+
+```
+enum [<enum_type>] {<enum_name_declaration> [, <enum_name_declaration>]} <enum_var_name>;
+```
+
+The default `<enum_type>` is `int`.
+Both the enumeration names and their values should be unique. 
+The default value of the first name is 0. 
+The values can be set for some of the names and not set for other names. 
+A name without a value is automatically assigned an increment of the value of the previous name.
+
+`<enum_name_dclaration>[N]` could be used to generate N named constants: 
+enum\_name\_dclaration0, enum\_name\_dclaration1, ...
+
+Available built-in methods: 
+- `num()`
+- `name()`
+- `first()`
+- `last()`
+- `next(<N>)`
+- `prev(<N>)`
+
+
 
 ## Data structure
 
@@ -290,23 +315,69 @@ during array manipulation iterations.
 
 `foreach` loop is useful in arrays processing. 
 
+```systemverilog
+foreach (arr[i, j]) begin
+    $display(arr[i][j]);
+end
+```
+
 
 ### Structure
 
-A structure represents a collection of data types that can be referenced as a whole, 
+A `struct` represents a collection of data types that can be referenced as a whole, 
 or the individual data types that make up the structure can be referenced by name.
 By default, structures are unpacked, 
 meaning that there is an implementation-dependent packing of the data types. 
 Unpacked structures can contain any data type.
 
-A packed structure consisits of bit fiels, which are packed together in memory without gaps.
-An unpacked structure has an implementation-dependent packing, normally matching C compiler.
-When a packed structure appears as a primary, it should be treated as a single vector.
+```
+struct [packed [signed | unsigned]] {<struct_content>} <struct_name>;
+```
+
+A packed structure consisits of bit fields, 
+which are packed together in memory without gaps.
+An unpacked structure has an implementation-dependent packing, 
+normally matching C compiler.
+When a packed structure appears as a primary, 
+it should be treated as a single vector available with arithmetic and logical operators.
+
+If any data type within a packed structure is 4-state, 
+the structure as a whole is treated as a 4-state vector. 
+If there are also 2-state members in the structure, 
+there is an implicit conversion from 4-state to 2-state 
+when reading those members and from 2-state to 4-state when writing them.
+
+Members in a `struct` could be referenced by `<struct_name>.<member_name>`. 
 
 
 ### Union
 
+A `union` is a data type that represents a single piece of storage 
+that can be accessed using one of the named member data types. 
+Only one of the data types in the union can be used at a time. 
+By default, a union is unpacked, 
+meaning that there is an implementation-dependent packing of the data types. 
+
+```
+union [packed [signed | unsigned]] {<struct_content>} <struct_name>;
+```
+
+Packed unions shall only contain members that are of integral data types. 
+The members of a packed, untagged union shall all be the same size. 
+Thus, a union member that was written as another member can be read back. 
+A packed union differs from an unpacked union in that when a packed union appears as a primary, 
+it shall be treated as a single vector available with arithmetic and logical operators.
+
+Only packed data types and the integer data types are legal in packed unions.
+
 
 ## User defined data type
+
+`typedef` could be used to define complex data types with 
+`struct`, `union`, `class`, `enum`, or basic data types. 
+
+```
+typedef <type_definition> <type_name>;
+```
 
 
