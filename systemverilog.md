@@ -28,12 +28,12 @@ Unpacked structure, unpacked union, or unpacked array are of aggregated vraibles
 Others are of singular variables. 
 
 
-## Basic data types
+## Singular data types
 
 New data types in SystemVerilog compared to Verilog are introduced. 
 
 
-### logic
+### Logic
 
 `logic` data type is a 4-state type. 
 The default value of `logic` variables is `x`. 
@@ -102,8 +102,7 @@ Available built-in methods:
 - `prev(<N>)`
 
 
-
-## Data structure
+## Aggragate data types
 
 ### Arrays
 
@@ -379,5 +378,104 @@ Only packed data types and the integer data types are legal in packed unions.
 ```
 typedef <type_definition> <type_name>;
 ```
+
+
+## Casting
+
+A data type can be changed by using `'` operation: 
+```
+<target_type>'(<expression>)
+```
+
+
+## Streaming operator
+
+Streaming operators perform packing of bit-stream types into 
+a sequence of bits in a user-specified order. 
+When used in the left-hand side, 
+the streaming operators upack a stream of bits into one or more vairables. 
+
+```
+{<stream_operator> [<slice_size>] {<value>[ , <value>]}}
+```
+
+where `<stream_operator>` are `>>` which means which means original order, 
+or `<<` which means inverted order.
+
+
+## Const constants
+
+A `const` form of constant differs from a `localparam` constant in that 
+the `localparam` shall be set during elaboration, 
+whereas a `const` constant can be set during runtime. 
+
+```
+const <data_type> <var_name> = <value>
+```
+
+
+# Parallel blocks
+
+A `fork-join` parallel block in a procedure 
+creates concurrent processes from each of its statements.
+
+```
+fork [: block_name]
+    [item_delcarations]
+    [statements]
+join | join_any | join_none
+```
+
+- `join`, 
+    the parent process stops 
+    until all the processes spawned by this fork complete
+- `join_any`, 
+    the parent process stops 
+    until any one of the processes spawned by this fork completes.
+- `join_none`, 
+    the parent process continues to execute 
+    concurrently with all the processes spawned by the fork. 
+    The spawned processes do not start executing 
+    until the parent thread esecutes a blocking statement or terminates.
+
+
+## Loop statements
+
+New loop statements contrast to verilog: 
+- **`continue`**
+- **`break`**
+- `foreach (<array>) begin ... end`
+- `do ... while (<condition>)`
+
+`++` and `--` are available in systemverilog and are helpful in loop statements. 
+
+In `for` loop statements, local variable delcaration is legal in initialization statement.
+
+
+# Static and automatic
+
+`automatic` can be used in varaible, task, function, 
+module, interface, program, and pakcage delcarations. 
+By defualt, delcarations are static. 
+
+An automatic delcaration will create specific variable storage for each invocation. 
+A static or default declaration will share a common variable storage on each invocation. 
+
+
+# Fuction and task
+
+The `begin` and `end` identifiers are optional in task or function definitions. 
+
+`return` can be used to terminate a fucntion or task.
+
+`void` can be used in function delcaration to ignore return value. 
+
+`ref` can be used to pass a reference of a variable to a function or task, 
+which is useful to pass array arguments. 
+
+Defualt values of arguments can be set in a function or task. 
+
+A taks or a fucntion can be delcared as `automatic`. 
+Automatic tasks and functions can be invoked recursively. 
 
 
