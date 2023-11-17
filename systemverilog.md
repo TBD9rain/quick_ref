@@ -452,7 +452,7 @@ New loop statements contrast to verilog:
 In `for` loop statements, local variable delcaration is legal in initialization statement.
 
 
-# Static and automatic
+# Static and automatic 
 
 `automatic` can be used in varaible, task, function, 
 module, interface, program, and pakcage delcarations. 
@@ -478,4 +478,130 @@ Defualt values of arguments can be set in a function or task.
 A taks or a fucntion can be delcared as `automatic`. 
 Automatic tasks and functions can be invoked recursively. 
 
+
+## Clocking block
+
+A clocking block is defined between the keywords `clocking` and `endclocking`.
+Clocking block construct identifies clock signals and 
+captures the timing and synchronization requirements of the blocks being modeled. 
+A clocking block assembles signals that are synchronous to a particular clock and 
+makes their timing explicit.
+
+
+## Clocking block declaration
+
+```
+clocking <clocking_name> <clocking_event> ;
+    <clocking_signal_direction> [<clocking_skew>] <clocking_signal_name>;
+endclocking
+```
+
+The `<clocking_skew>` determines how many time units away from 
+the clock event a signal is to be sampled or driven.
+
+*Example:*
+```systemverilog
+clocking bus @(posedge clock1);
+    default input #10ns output #2ns;
+    input data, ready, enable = top.mem1.enable;
+    output negedge ack;     //  driven on the negative edge of the clock
+    input #1step addr;
+endclocking
+```
+
+In the preceding example, the last two delcarations overrides the default skew. 
+
+
+## Input and output skews
+
+Input (or inout) signals are sampled at the designated clock event. 
+If an input skew is specified, then the signal is sampled at skew time units before the clock event. 
+Similarly, output (or inout) signals are driven skew simulation time units after the corresponding clock event. 
+
+## Cycle delay
+
+`## <N>` could be used to delay for N clocking events. 
+
+
+# Program
+
+The program construct serves as a clear separator between design and testbench, 
+and, more importantly, it specifies specialized execution semantics in the reactive region set 
+for all elements declared within the program. 
+Together with clocking blocks, 
+the program construct provides for race-free interaction between the design 
+and the testbench and enables cycle- and transaction-level abstractions.
+
+
+# Interface
+
+The interface construct, enclosed between the keywords `interface...endinterface`, 
+encapsulates the communication between design blocks, and between design and verification blocks. 
+At its lowest level, an interface is a named bundle of nets or variables. 
+Modules that are connected via an interface can simply call the subroutine menbers of that 
+interface to drive the communication. 
+Interface can aslos contain processes and continuous assignments, 
+which makes protocol checking, coverage recording, reporting, and assertions possible in interfaces. 
+
+
+## Interface declaration 
+
+```
+interface <interface_name> [(<interface_ports>)]
+    [<clocking_block_declarations>]
+    [<interface_parameters>]
+    <port_declarations>
+    [<modport_declarations>]
+    [<process_declarations>]
+endinterface
+```
+
+An interface can be instantiated like a module. 
+
+The difference between nets or variables in the interface port list and 
+other nets or variables within the interface is that 
+only those in the port list can be connected externally 
+by name or position when the interface is instantiated.
+
+
+## Modport
+
+`modport` is used to indicate the directions during port declarations within interface. 
+As the name indicates, the directions are those **seen from the module**. 
+
+```
+modport <modport_name> (<direction> <port_name>[, <direction> <port_name>])
+```
+
+A modport expression allows elements declared in an interface to be included in a modport list. 
+For example: 
+
+```systemverilog
+interface I;
+    logic [7:0] r;
+    const int x=1;
+    bit R;
+    modport A (output .P(r[3:0]), input .Q(x), R);
+    modport B (output .P(r[7:4]), input .Q(2), R);
+endinterface
+
+module M ( interface i);
+    initial i.P = i.Q;
+endmodule
+
+module top;
+    I i1 ();
+    M u1 (i1.A);
+    M u2 (i1.B);
+    initial #1 $display("%b", i1.r); // displays 00100001
+endmodule
+```
+
+The modport construct can also be used to specify 
+the direction of clocking blocks declared within an interface.
+All of the clocking blocks used in a modport declaration shall be declared 
+by the same interface as the modport itself.
+Like all modport declarations, 
+the direction of the clocking signals are those seen 
+from the module in which the interface becomes a port.
 
