@@ -9,6 +9,17 @@ SystemVerilog is mainly used in **verifications**,
 while designs are implemented almost by Verilog. 
 
 
+# Design Element
+
+- module
+- program
+- interface
+- checker
+- package
+- primitive
+- configuration
+
+
 # SystemVerilog Data
 
 A data type is a **set** of values and a set of operations that can be performed on those values.
@@ -388,21 +399,6 @@ A data type can be changed by using `'` operation:
 ```
 
 
-## Streaming operator
-
-Streaming operators perform packing of bit-stream types into 
-a sequence of bits in a user-specified order. 
-When used in the left-hand side, 
-the streaming operators upack a stream of bits into one or more vairables. 
-
-```
-{<stream_operator> [<slice_size>] {<value>[ , <value>]}}
-```
-
-where `<stream_operator>` are `>>` which means which means original order, 
-or `<<` which means inverted order.
-
-
 ## Const constants
 
 A `const` form of constant differs from a `localparam` constant in that 
@@ -414,7 +410,41 @@ const <data_type> <var_name> = <value>
 ```
 
 
-# Parallel blocks
+# Class
+
+
+# Processes
+
+# Structured procedure
+
+Structured procedures includes: 
+- initial
+- always
+- final
+- task
+- function
+
+
+### Fuction and task
+
+The `begin` and `end` identifiers are optional in task or function definitions. 
+
+`return` can be used to terminate a fucntion or task.
+
+`void` can be used in function delcaration to ignore return value. 
+
+`ref` can be used to pass a reference of a variable to a function or task, 
+which is useful to pass array arguments without duplication. 
+
+Defualt values of arguments can be set in a function or task. 
+
+A taks or a fucntion can be delcared as `automatic`. 
+Automatic tasks and functions can be invoked recursively. 
+
+
+## Block statement
+
+### Parallel blocks
 
 A `fork-join` parallel block in a procedure 
 creates concurrent processes from each of its statements.
@@ -439,11 +469,18 @@ join | join_any | join_none
     until the parent thread esecutes a blocking statement or terminates.
 
 
-## Loop statements
+## Procedural programming statements
+
+Including: 
+- Consitional if-else statement
+- Case statement
+- Pattern matching conditional statements
+- Loop statements
+- Jump statements
+
+### Loop statements
 
 New loop statements contrast to verilog: 
-- **`continue`**
-- **`break`**
 - `foreach (<array>) begin ... end`
 - `do ... while (<condition>)`
 
@@ -452,34 +489,37 @@ New loop statements contrast to verilog:
 In `for` loop statements, local variable delcaration is legal in initialization statement.
 
 
-# Static and automatic 
+### Jumpstatements
 
-`automatic` can be used in varaible, task, function, 
-module, interface, program, and pakcage delcarations. 
-By defualt, delcarations are static. 
-
-An automatic delcaration will create specific variable storage for each invocation. 
-A static or default declaration will share a common variable storage on each invocation. 
+- `continue`
+- `break`
+- `return`
 
 
-# Fuction and task
+# Operators
 
-The `begin` and `end` identifiers are optional in task or function definitions. 
-
-`return` can be used to terminate a fucntion or task.
-
-`void` can be used in function delcaration to ignore return value. 
-
-`ref` can be used to pass a reference of a variable to a function or task, 
-which is useful to pass array arguments. 
-
-Defualt values of arguments can be set in a function or task. 
-
-A taks or a fucntion can be delcared as `automatic`. 
-Automatic tasks and functions can be invoked recursively. 
+New operators compared to verilog: 
+- `+=`, `-=`, `*=`, ...
+- `++`, `--`
+- streaming operators
 
 
-## Clocking block
+## Streaming operator
+
+Streaming operators perform packing of bit-stream types into 
+a sequence of bits in a user-specified order. 
+When used in the left-hand side, 
+the streaming operators upack a stream of bits into one or more vairables. 
+
+```
+{<stream_operator> [<slice_size>] {<value>[ , <value>]}}
+```
+
+where `<stream_operator>` are `>>` which means which means original order, 
+or `<<` which means inverted order.
+
+
+# Clocking Block
 
 A clocking block is defined between the keywords `clocking` and `endclocking`.
 Clocking block construct identifies clock signals and 
@@ -521,6 +561,22 @@ Similarly, output (or inout) signals are driven skew simulation time units after
 ## Cycle delay
 
 `## <N>` could be used to delay for N clocking events. 
+
+
+# Static and Automatic 
+
+`automatic` can be used in varaible, task, function, 
+module, interface, program, and pakcage delcarations. 
+By defualt, delcarations are static. 
+
+An automatic delcaration will create specific variable storage for each invocation. 
+A static or default declaration will share a common variable storage on each invocation. 
+
+
+# Assertions
+
+
+# Constrained Random Value Generation
 
 
 # Program
