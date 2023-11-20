@@ -20,6 +20,119 @@ while designs are implemented almost by Verilog.
 - configuration
 
 
+# Scheduling Semantics
+
+SystemVerilog and Verlog are both parallel programming languages. 
+The execution of certain language constructs is defined by parallel execution of blocks or processes. 
+It is important to understand what execution order is guaranteed to the user and what execution order is indeterminate.
+
+Terms in an event execution model: 
+
+- *Process*, concurrently scheduled elements, 
+like modules, initial and always procedures, continuous assignments, procedural assignments, asynchronous tasks...
+- *Updata evnet*: change in state of a net or variable. 
+- *Evaluation event*: evaluation of a process.
+- *Simulation time* 
+
+
+## Verilog stratified event queue
+
+Verilog event queue consisits of 5 regions: 
+
+1. ***Active events***, 
+occur at the current simulation time and can be processed in any order (causes nondeterminism). 
+Processing of all the active events is called a *simulation cycle*. 
+
+2. ***Inactive events***, 
+occur at the current simulation time, 
+but shall be processed after all the active events, 
+like an explicit zero delay (`#0`). 
+
+3. ***Noblocking assign update events***, 
+events have been evaluated in previous simulation time, 
+but shall be assigned at this simulation time. 
+
+4. ***Monitor events***, 
+like `$monitor` and `$strobe` system tasks. 
+
+5. ***Future events***, 
+are divided into *future inactive events* and *future nonblocking assignment update events*. 
+
+The callback procedures scheduled with PLI routines shall be treated as inactive evnets. 
+
+Events can be added to any of the regions, 
+but are only removed from the *active region*. 
+Active events are updeted or evaluated firstly, 
+and the events are activated by the order of inactive events, 
+nonblocking assign update events, monitor events, 
+and then advance to next event time and active future events.
+
+\<diagram\>
+
+
+## SystemVerilog stratified event scheduler
+
+Every event has one and only one simulation execution time. 
+All scheduled events at a specific time define a time slot.
+
+
+The simulation regions of a time slot consist of: 
+
+1. ***Preponed Events Region***, 
+sampling in the preponed region is identical to sampling in the previous postponed region.
+
+2. ***Active Events Region***, 
+holds current active events being evaluated. 
+
+3. ***Inactive Events Region***, 
+holds events to be evaluated after active events, 
+like an explicit zero delay `#0`. 
+
+4. ***NBA***
+i.e. Nonblocking Assignment Update Events Region, 
+holds events to be evaluated after inactive evnets, 
+like a nonblocking assignment. 
+
+5. ***Observed Events Region***, 
+is for evaluation of property expressions. 
+
+6. ***Reactive Events Region***, 
+the code specified by blocking assignments in checkers, program blocks 
+and the code in action blocks of concurrent assertions are scheduled in the Reactive region.
+
+7. ***Re-Inactive Events Region***
+holds events to be evaluated after reactive events, 
+like an explicit zero delay `#0`. 
+
+8. ***Re-NBA Events Region***
+holds events to be evaluated after re-inactive evnets, 
+like a nonblocking assignment. 
+
+9. ***Postponed Events Region***
+holds `$monitor`, `$strobe`, and other events. 
+
+In addition to simulation regions, 
+the PLI (Programming Language Interface) regions of a time slot consist of: 
+
+1. ***Pre-Active***
+
+2. ***Pre-NBA***
+
+3. ***Post-NBA***
+
+4. ***Pre-Observed***
+
+5. ***Post-Observed***
+
+6. ***Pre-Re-NBA***
+
+7. ***Post-Re-NBA***
+
+8. ***Pre-Postponed***
+
+\<diagram\>
+
+
 # SystemVerilog Data
 
 A data type is a **set** of values and a set of operations that can be performed on those values.
