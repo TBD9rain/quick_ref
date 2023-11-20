@@ -112,25 +112,31 @@ like a nonblocking assignment.
 holds `$monitor`, `$strobe`, and other events. 
 
 In addition to simulation regions, 
-the PLI (Programming Language Interface) regions of a time slot consist of: 
+the PLI (Programming Language Interface) regions of a time slot, 
+which provide a PLI callback control point 
+that allows PLI application routines to read values, write values or create events. 
 
-1. ***Pre-Active***
-
+1. ***Pre-Active***,
 2. ***Pre-NBA***
-
 3. ***Post-NBA***
-
 4. ***Pre-Observed***
-
 5. ***Post-Observed***
-
 6. ***Pre-Re-NBA***
-
 7. ***Post-Re-NBA***
-
 8. ***Pre-Postponed***
 
 \<diagram\>
+
+
+## Determinism and Nondeterminism
+
+Determinism: 
+- Statements within a begin-end block shall be executed in the order in which they appear in that begin-end block. 
+- Nonblocking assignments (NBAs) shall be performed in the order the statements were executed. 
+
+Nondeterminism
+- Active events can be taken off the Active or Reactive event region and processed in any order.
+- Statements without time-control constructs in procedural blocks do not have to be executed as one event.
 
 
 # SystemVerilog Data
