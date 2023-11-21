@@ -694,18 +694,88 @@ A static or default declaration will share a common variable storage on each inv
 
 # Assertions
 
+Assertions are used to validate the behavior of a design and provide functional coverage. 
+
+Assertion statements consist of: 
+
+- `assert`
+- `assume`
+- `cover`
+- `restrict`
+
+Assertions are divided into concerrent and immediate assertions. 
+Immediate assertions are executed like a statement in a procedural block. 
+Immediate assertions are primarily intended to be used with simulation. 
+There is no immediate restrict assertion statement.
+Concurrent assertions are based on clock semantics and use sampled values of their expressions. 
+Concurrent assertions are evaluated in the Observed region.
+
+
+## Imediate assertions
+
+In a simple immediate assertion, 
+pass and fail statements take place immediately upon assertion evaluation.
+```
+[<assertion_name>:] {assert | assume | cover} (expression) 
+    [<pass_statements>]
+[else]
+    [<fail_statements>]
+```
+
+In immediate `assert` statement, its expression is required to be true. 
+If no `else` clause is specified, 
+failure of an immediate assert statement will call `$error` by default. 
+Immediate `assume` may behave as immediate `assert`. 
+
+System tasks like `$error`: 
+- `$fatal`
+- `warning`
+- `$info`
+
+`<assertion_name>:` provides name displaying by hierarchical name of the scope. 
+
+
+In a deferred immediate assertion, 
+the statements are delayed until later in the time step. 
+```
+{assert | assume | cover} {# 0 | final}(expression) 
+    [<pass_statements>]
+[else]
+    [<fail_statements>]
+```
+
+Differences between defered immediate assertions and simple immediate assertions: 
+- Reporting is delayed rather than being reported immediately.
+- Statements may only contain a single subroutine call.
+- A deferred assertion may be used as a module common item.
+
+
+## Concurrent assertions
+
+
 
 # Constrained Random Value Generation
 
 
 # Program
 
-The program construct serves as a clear separator between design and testbench, 
-and, more importantly, it specifies specialized execution semantics in the reactive region set 
-for all elements declared within the program. 
-Together with clocking blocks, 
-the program construct provides for race-free interaction between the design 
-and the testbench and enables cycle- and transaction-level abstractions.
+All statements within a program block are scheduled in reactive regions during simulation. 
+
+```
+program <program_name> [(<list_of_port>)];
+    <program_contents>
+endprogram
+```
+
+A program block may contain one or more `initial` or `final` procedures. 
+`always` procedures are not allowed in program, 
+which could be replaced by `forever` statement.
+
+When all initial procedures within a program have reached their end, 
+that program shall immediately terminate by means of an implicit call to `$finish`.
+
+Elements within a program block is invisible to modules, 
+which insures the independency of program as a testbench. 
 
 
 # Interface
