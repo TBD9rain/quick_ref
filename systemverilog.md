@@ -531,6 +531,198 @@ const <data_type> <var_name> = <value>
 
 # Class
 
+Class is a data type which consists of properties (data) and methods (fucntions and tasks). 
+Objects instatiating classes could be created and destroyed dynamically. 
+
+```
+class <class_name> [#(<parameter_and_type_list>)]
+    [extends <base_class_name> [#(<parameter_and_type_list>)]]                          //  inheritance
+    ;
+    [static | local | protected ][const ]               <class_properties_declarations>
+    [extern ][static | local | protected ][virtal ]     <class_subroutines_declarations>
+endcalss
+```
+
+For example: 
+```systemverilog
+class Packet;
+    int a = 0;
+    static int b = 1;
+endclass
+```
+
+
+## Object
+
+An object is used by first declaring a variable (handle) of that class type 
+and then creating an object of that class (using the `new` function) 
+and assigning it to the variable.
+
+For example:
+```systemverilog
+Packet p;
+p = new;
+```
+
+`==`, `!=` with another calss object or with null is valid. 
+Object data and methods could be accessed with a class scope resolution operator: 
+```systemverilog
+$display(p.a);
+```
+
+Methods shall be declared as automatic. 
+Using `static` qualifier with method declaration is illegal. 
+However, there are staitc methods. 
+
+Class parameters and types can be changed during object declaration like parameters in a module.
+Class parameters could be accessed by object like a property or by class like a static property.  
+Class type could only be accessed by class like a statice  property
+
+## Constructors
+
+If a class does not provide an explicit user-defined `new` method, 
+an implicit new method shall be provided automatically.
+An explicit user-defined `new` method could be declared as: 
+
+```
+class Packet;
+    int a = 0;
+
+    function new(a);
+        this.a = a;
+    endfunction
+endclass
+```
+
+`this` is similar to `self` in python. 
+The `this` keyword shall only be used within non-static class methods, 
+constraints, inlined constraint methods, or covergroups embedded within classes;
+
+The `new` method of a derived class shall first call its base class constructor `super.new()` 
+in the **first line of its `new` method**.
+After the properties are initialized, 
+the remaining code in a user-defined constructor shall be evaluated.
+
+`super.<super_member>` could be used to invoke data or mehtods of base class. 
+
+
+## Static property
+
+Properties in class declarations are automatic by default. 
+To access a static class property, use`<clasee_name>::<property>`. 
+Static properties are independnet to of objects, 
+which could be used without creating an object. 
+
+
+## Static methods
+
+Static methods behave like regular subroutines, 
+which can access static class properties or call static methods of the same class.
+Access to non-static members or to the special `this` handle 
+within the body of a static method is illegal and results in a compiler error.
+
+```systemverilog
+class TwoTasks;
+    static task t1(); ... endtask       // static class method with
+                                        // automatic variable lifetime
+
+    task static t2(); ... endtask       // ILLEGAL: non-static class method with
+                                        // static variable lifetime
+endclass
+```
+
+
+## Protection
+
+Class properties and methods are public by default. 
+Class parameters and class local parameters are also public.
+
+Class properties and methods could be qualified by: 
+
+- `local`, 
+only available to methods inside the class. 
+Local members are not visible within subclasses. 
+
+- `protected`, 
+identical to `local`, 
+except that protected members is visible to subclasses.
+
+A class method could be qualified with `virtual` as well. 
+A virtual method shall override a method in all of its base classes, 
+whereas a non-virtual method shall only override a method in that class and its descendants.
+
+
+## Method declarations out of class
+
+The `extern` qualifier indicates that 
+the body of the method (its implementation) is to be found outside the declaration.
+
+
+## Virtual methods
+
+A virtual method shall override a method in all of its base classes, 
+whereas a non-virtual method shall only override a method in that class and its descendants.
+
+```systemverilog
+class BasePacket;
+    int A = 1;
+    int B = 2;
+
+    function void printA;
+        $display("BasePacket::A is %d", A);
+    endfunction : printA
+
+    virtual function void printB;
+        $display("BasePacket::B is %d", B);
+    endfunction : printB
+endclass : BasePacket
+
+class My_Packet extends BasePacket;
+    int A = 3;
+    int B = 4;
+
+    function void printA;
+        $display("My_Packet::A is %d", A);
+    endfunction: printA
+
+    virtual function void printB;
+        $display("My_Packet::B is %d", B);
+    endfunction : printB
+endclass : My_Packet
+
+BasePacket P1 = new;
+My_Packet P2 = new;
+
+initial begin
+    P1.printA;      // displays 'BasePacket::A is 1'
+    P1.printB;      // displays 'BasePacket::B is 2'
+    P1 = P2;        // P1 has a handle to a My_packet object
+    P1.printA;      // displays 'BasePacket::A is 1'
+    P1.printB;      // displays 'My_Packet::B is 4' – overidden by subclass
+    P2.printA;      // displays 'My_Packet::A is 3'
+    P2.printB;      // displays 'My_Packet::B is 4'
+end
+```
+
+
+## Abstract classes and pure virtual methods
+
+Abstract classes are frameworks for its subclasses. 
+Abstract classes are qualified with `virtual`: 
+
+```
+virtual class <abstract_class>
+    pure virtual function <function_name> [<port_list>];
+endclass
+```
+
+An object of an abstract class shall not be constructed directly. 
+Its constructor may only be called indirectly through the chaining of constructor calls from an extended non-abstract object.
+
+A pure virtual method is declared as a prototype withou implementation, 
+which is qualified with `pure virtual`. 
+An extended subclass may provide an implementation within a virtual function with identical name. 
+
 
 # Processes
 
@@ -560,6 +752,7 @@ Defualt values of arguments can be set in a function or task.
 A taks or a fucntion can be delcared as `automatic`. 
 Automatic tasks and functions can be invoked recursively. 
 
+SystemVerilog allows arguments to tasks and functions to be bound by name as well as by position like module ports. 
 
 ## Block statement
 
@@ -808,6 +1001,74 @@ other nets or variables within the interface is that
 only those in the port list can be connected externally 
 by name or position when the interface is instantiated.
 
+```systemverilog
+interface simple_bus (input logic clk); // Define the interface
+    logic req, gnt;
+    logic [7:0] addr, data;
+    logic [1:0] mode;
+    logic start, rdy;
+endinterface: simple_bus
+
+module memMod(simple_bus a); // Uses just the interface
+    logic avail;
+
+    always @(posedge a.clk) // the clk signal from the interface
+        a.gnt <= a.req & avail; // a.req is in the 'simple_bus' interface
+endmodule
+
+module cpuMod(simple_bus b);
+...
+endmodule
+
+module top;
+    logic clk = 0;
+
+    simple_bus sb_intf1(clk); // Instantiate the interface
+    simple_bus sb_intf2(clk); // Instantiate the interface
+
+    memMod mem1(.a(sb_intf1)); // Reference simple_bus 1 to memory 1
+    cpuMod cpu1(.b(sb_intf1));
+    memMod mem2(.a(sb_intf2)); // Reference simple_bus 2 to memory 2
+    cpuMod cpu2(.b(sb_intf2));
+endmodule
+```
+
+generic interface reference is used to declare an unspecified interface for later instantiate. 
+the generic interface reference can only be declared using the ANSI style, 
+which means the `interface` keyword must be explictly given in the port list. 
+
+```systemverilog
+interface simple_bus (input logic clk); // Define the interface
+    logic req, gnt;
+    logic [7:0] addr, data;
+    logic [1:0] mode;
+    logic start, rdy;
+endinterface: simple_bus
+
+module memMod(interface a); // Uses just the interface
+    logic avail;
+
+    always @(posedge a.clk) // the clk signal from the interface
+        a.gnt <= a.req & avail; // a.req is in the 'simple_bus' interface
+endmodule
+
+module cpuMod(interface b);
+...
+endmodule
+
+module top;
+    logic clk = 0;
+
+    simple_bus sb_intf1(clk); // Instantiate the interface
+    simple_bus sb_intf2(clk); // Instantiate the interface
+
+    memMod mem1(.a(sb_intf1)); // Reference simple_bus 1 to memory 1
+    cpuMod cpu1(.b(sb_intf1));
+    memMod mem2(.a(sb_intf2)); // Reference simple_bus 2 to memory 2
+    cpuMod cpu2(.b(sb_intf2));
+endmodule
+```
+
 
 ## Modport
 
@@ -819,26 +1080,37 @@ modport <modport_name> (<direction> <port_name>[, <direction> <port_name>])
 ```
 
 A modport expression allows elements declared in an interface to be included in a modport list. 
-For example: 
+Suppose an interface with modport is declared as: 
 
 ```systemverilog
-interface I;
-    logic [7:0] r;
-    const int x=1;
-    bit R;
-    modport A (output .P(r[3:0]), input .Q(x), R);
-    modport B (output .P(r[7:4]), input .Q(2), R);
+interface i2;
+    wire a, b, c, d;
+    modport master (input a, b, output c, d);
+    modport slave (output a, b, input c, d);
 endinterface
+```
 
-module M ( interface i);
-    initial i.P = i.Q;
+Then it can be instantiated as: 
+
+```systemverilog
+module m (i2 i);
+    ...
+endmodule
+
+module s0 (interface i);
+    ...
+endmodule
+
+module s1 (i2.slave i);
+    ...
 endmodule
 
 module top;
-    I i1 ();
-    M u1 (i1.A);
-    M u2 (i1.B);
-    initial #1 $display("%b", i1.r); // displays 00100001
+    i2 i();
+    m   u1(.i     (i.master   ));
+    s0  u2(.i     (i.slave    ));
+    s1  u2(.i     (i          ));
+
 endmodule
 ```
 
@@ -849,4 +1121,68 @@ by the same interface as the modport itself.
 Like all modport declarations, 
 the direction of the clocking signals are those seen 
 from the module in which the interface becomes a port.
+
+An interface with a clock block and modports is declared and instantiated as: 
+
+```systemverilog
+interface A_Bus( input logic clk );
+    wire req, gnt;
+    wire [7:0] addr, data;
+
+    clocking cb @(posedge clk);
+        input gnt;
+        output req, addr;
+        inout data;
+        property p1; 
+            req ##[1:3] gnt; 
+        endproperty
+    endclocking
+
+    modport DUT ( input clk, req, addr, // Device under test modport
+        output gnt,
+        inout data );
+        
+    modport STB ( clocking cb ); // synchronous testbench modport
+
+    modport TB ( input gnt, // asynchronous testbench modport
+        output req, addr,
+        inout data );
+endinterface
+
+module dev1(A_Bus.DUT b); // Some device: Part of the design
+    ...
+endmodule
+
+module dev2(A_Bus.DUT b); // Some device: Part of the design
+    ...
+endmodule
+
+module top;
+    logic clk;
+
+    A_Bus b1( clk );
+    A_Bus b2( clk );
+
+    dev1 d1( b1 );
+    dev2 d2( b2 );
+    T tb( b1, b2 );
+endmodule
+
+program T (A_Bus.STB b1, A_Bus.STB b2 ); // testbench: 2 synchronous ports
+    assert property (b1.cb.p1); // assert property from within program
+
+    initial begin
+        @b1.cb
+
+        b1.cb.req <= 1;
+        wait( b1.cb.gnt == 1 );
+        ...
+        b1.cb.req <= 0;
+        b2.cb.req <= 1;
+        wait( b2.cb.gnt == 1 );
+        ...
+        b2.cb.req <= 0;
+    end
+endprogram
+```
 
