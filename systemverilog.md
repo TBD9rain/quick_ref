@@ -606,6 +606,31 @@ the remaining code in a user-defined constructor shall be evaluated.
 `super.<super_member>` could be used to invoke data or mehtods of base class. 
 
 
+## Class copying
+
+Considering `Packet` is a class and: 
+
+```systemverilog
+Packet  p0;
+Packet  p1;
+Packet  p2;
+
+p0  = new;
+p1  = p0;
+p2  = new p0;
+```
+
+After preceding codes, a new `Packet` object was created and referred by `p0`, 
+`p1` refer to the same object as `p0`, 
+`p2` refer to another object with same values as `p0` (`p1`). 
+
+In `p2`, all variables of `p0` (`p1`) are copied: integers, strings, instance handles, etc. 
+Objects, however, are not copied, only their handles in `p0` (`p1`); 
+as before, two names for the same object have been created. 
+To do a full (deep) copy, where everything (including nested objects) is copied, 
+customized copy method is typically needed.
+
+
 ## Static property
 
 Properties in class declarations are automatic by default. 
