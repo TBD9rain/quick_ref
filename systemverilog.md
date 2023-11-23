@@ -157,6 +157,9 @@ An aggregate varibale or expression represents a set or collection of singular v
 Unpacked structure, unpacked union, or unpacked array are of aggregated vraibles. 
 Others are of singular variables. 
 
+Class handles are singular. 
+But classes need not be categorized as singular or aggregate. 
+
 
 ## Singular data types
 
@@ -208,7 +211,7 @@ Available methods:
 ### Enumeration
 
 An enumeration type declares a set of integral named constants, 
-which can be declared as following: 
+which can be declared as follows: 
 
 ```
 enum [<enum_type>] {<enum_name_declaration> [, <enum_name_declaration>]} <enum_var_name>;
@@ -538,8 +541,8 @@ Objects instatiating classes could be created and destroyed dynamically.
 class <class_name> [#(<parameter_and_type_list>)]
     [extends <base_class_name> [#(<parameter_and_type_list>)]]                          //  inheritance
     ;
-    [static | local | protected ][const ]               <class_properties_declarations>
-    [extern ][static | local | protected ][virtal ]     <class_subroutines_declarations>
+    [static ][local | protected ][random | randomc ][const ]    <class_properties_declarations>
+    [extern ][static ][virtal ][local | protected ]             <class_subroutines_declarations>
 endcalss
 ```
 
@@ -839,6 +842,7 @@ New operators compared to verilog:
 - `+=`, `-=`, `*=`, ...
 - `++`, `--`
 - streaming operators
+- set membership operator `inside`
 
 
 ## Streaming operator
@@ -854,6 +858,26 @@ the streaming operators upack a stream of bits into one or more vairables.
 
 where `<stream_operator>` are `>>` which means which means original order, 
 or `<<` which means inverted order.
+
+
+## Set membership operator
+
+The syntax for the set membership operator is as follows: 
+
+```
+<expression> inside {<set>}
+```
+
+The members of the `<set>` are scanned until a match is found and the operation returns `1'b1`.
+The inside operator uses the equality operator (`==`) on nonintegral expressions to perform the comparison. 
+If no match is found, the inside operator returns 1'b0.
+
+`<set>` is a comma-separated list of expressions of ranges. 
+A range can be specified as `[low_bound:high_bound]`. 
+A bound specified by `$` shall represent the lowest or highest value. 
+If an expression in the list is an unpacked array, 
+its elements are traversed by descending into the array until reaching a singular value. 
+Values can be repeated; therefore, values and value ranges can overlap. 
 
 
 # Clocking Block
@@ -973,6 +997,398 @@ Differences between defered immediate assertions and simple immediate assertions
 
 
 # Constrained Random Value Generation
+
+The random constraints are typically specified on top of an object-oriented data abstraction 
+that models the data to be randomized as objects 
+that contain random variables and user-defined constraints.
+
+## Random variables
+
+Class properties can be declared random using the `rand` and `randc` qualifiers. 
+The syntax of random variables within class declarations is as follows: 
+
+```systemverilog
+class <class_name>
+    rand    [<other_qualifier> ]   <property_declarations>
+    randc   [<other_qualifier> ]   <property_declarations>
+endclass
+```
+
+Variables declared with the `rand` keyword are standard random variables. 
+Their values are **uniformly distributed** over their range.
+
+Variables declared with the `randc` keyword are random-cyclic variables 
+that cycle through all the values in a random permutation of their declared range.
+With `randc`, all possible values satisfying constraints are iterated in a random order. 
+
+
+### Sigular vairbales
+
+All singular variables of any intgral type can be randomized using `rand` or `randc`. 
+
+For each active random variable of `enum` type, 
+the solver shall select a value from the set of named constants defined by the corresponding `enum`.
+
+
+### Fixed-size arrays
+
+Fixed-size arrays can be declared as `rand` or `randc`, 
+in which case all of their member elements are treated as rand or randc.
+Individual array elements can be constrained, 
+in which case the index expression may include iterative constraint loop variables, constants, and state variables.
+
+
+### Dynamic arrays
+
+Dynamic arrays can be declared as `rand` or `randc`. 
+All of the elements in the array are randomized, overwriting and previous data. 
+
+The size of a dynamic array declared as `rand` or `randc` can be constrained. 
+If a dynamic array's size is not constrained, then the array shall not be resized. 
+When a dynamic array is resized by `randomize()`, 
+the resized array is initialized with the original array. 
+Any new elements inserted take on the default value of the element type.
+
+If the elements in the dynamic array are class objects, 
+randomize() does not allocate any class objects. 
+Up to the new size, existing class objects are retained and their content randomized. 
+If the new size is greater than the original size, 
+each of the additional elements has a null value requiring no randomization.
+
+In resizing a dynamic array by `randomize()` or new, 
+the `rand_mode` of each retained element is preserved 
+and the `rand_mode` of each new element is set to active.
+
+
+### Associative arrays
+
+Associative arays can be declared as `rand` or `randc`. 
+All of the elements in the array are randomized, overwriting and previous data. 
+
+
+### Queues
+
+Queues can be declared as `rand` or `randc`. 
+All of the elements in the array are randomized, overwriting and previous data. 
+
+The size of a queue declared as `rand` or `randc` can be constrained. 
+When a queue is resized by randomize(), 
+elements are inserted or deleted at the back of the queue as necessary to produce the new queue size.
+Any new elements inserted take on the default value of the element type.
+
+If the elements in the queue are class objects, 
+randomize() does not allocate any class objects. 
+Up to the new size, existing class objects are retained and their content randomized. 
+If the new size is greater than the original size, 
+each of the additional elements has a null value requiring no randomization.
+
+In resizing a queue by `randomize()` or new, 
+the `rand_mode` of each retained element is preserved 
+and the `rand_mode` of each new element is set to active.
+
+
+### Structure
+
+An unpacked structure can be declared as `rand` but not `randc`, 
+in which case all of that structure’s random members are solved concurrently. 
+A structure member can be declared as `rand` or `randc`. 
+
+A packed structure can be declared as `rand` or `randc`, 
+in which case that structure is treated as an integral type. 
+Members of packed structures shall not have a random modifier. 
+
+
+### Unions
+
+A packed untagged union can be declared as `rand` or `randc`, 
+in which case that union is treated as an integral type. 
+Members of packed untagged unions shall not have a random qualifier.
+
+
+### Class handles
+
+Class handles can be declared as `rand` but not `randc`, 
+in which case all of that object’s variables and constraints are solved concurrently 
+with the variables and constraints of the object that contains the handle.
+
+
+## Random Constraints
+
+The values of random variables are determined using constraint expressions 
+that are declared within constraint blocks. 
+Constraint blocks are class members. 
+Constraint block names shall be unique within a class.
+The syntax of random constraints within class declarations is as follows:
+
+```
+class <class_name>
+    <random_propery_delcarations>
+
+    [static ]constraint <constraint_name> {<constraint_contents>}
+
+    [extern | pure][static ] constraint <external_constraint_name> ;
+
+endclass
+```
+
+Constraints follow the same general rules for inheritance as other class members. 
+
+
+### External constraint blocks
+
+An external constraint block shall appear in the same scope as the corresponding class declaration 
+and shall appear after the class declaration in that scope. 
+If the explicit form of constraint prototype is used, 
+it shall be an error if no corresponding external constraint block is provided. 
+If the implicit form of prototype is used and there is no corresponding external constraint block, 
+the constraint shall be treated as an empty constraint and a warning may be issued. 
+An empty constraint is one that has no effect on randomization, 
+equivalent to a constraint block containing the constant expression 1.
+For example:
+
+```systemverilog
+class C;
+    rand int x;
+    constraint proto1; // implicit form
+    extern constraint proto2; // explicit form
+endclass
+
+constraint C::proto1 { x inside {-4, 5, 7}; }
+constraint C::proto2 { x >= 0; }
+```
+
+An abstract class may contain pure constraints. 
+A pure constraint is syntactically similar to an external constraint but uses the `pure` keyword. 
+
+
+### Set membership
+
+Constraints support the set membership operator `inside`. 
+the nagated form of the `inside` operator denotes that expression lies outside the set. 
+For example: 
+
+```systemverilog
+rand integer x, y, z;
+constraint c1 {x inside {3, 5, [9:15], [24:32], [y:2*y], z};}
+
+rand integer a, b, c;
+constraint c2 {!(a inside {b, c});}
+
+integer fives[4] = '{ 5, 10, 15, 20 };
+rand integer v;
+constraint c3 { v inside {fives}; }
+```
+
+
+### Distribution
+
+In addition to set membership, 
+constraints support sets of weighted values called distributions.
+Without distributions, the probabilities of all valid values are equal. 
+
+Distribution syntax: 
+
+```
+<expression> dixt {:= [| :/] <expression>}
+```
+
+A `dist` operation shall not be applied to `randc` variables.
+
+The `:=` operator assigns the specified weight to the item or, 
+if the item is a range, to every value in the range. 
+
+The `:/` operator assigns the specified weight to the item or, 
+if the item is a range, to the range **as a whole**. 
+If there are n values in the range, the weight of each value is `range_weight / n`.
+
+```
+x dist { [100:102] := 1, 200 := 2, 300 := 5}    //  100, 101, 102, 200, or 300 with 
+                                                //  a weighted ratio of 1-1-1-2-5
+x dist { [100:102] :/ 1, 200 := 2, 300 := 5}    //  100, 101, 102, 200, or 300 with 
+                                                //  a weighted ratio of 1/3-1/3-1/3-2-5.
+```
+
+
+### Unique constraints
+
+`unique` qualifier could be used so that 
+no two members of the group have the same value after randomization.
+All members of the group of variables so specified shall be of **equivalent type**.
+`unique` could not be used with `randc` variables. 
+
+```systemverilog
+rand byte a[5];
+rand byte b;
+rand byte excluded;
+constraint u { unique {b, a[2:3], excluded}; }
+constraint exclusion { excluded == 5; }
+```
+
+In the preceding example, 
+variables `a[2]`, `a[3]`, `b`, and `excluded` will all contain different values after randomization. 
+Because of the constraint exclusion, none of the variables `a[2]`, `a[3]`, and `b` will contain the value 5.
+
+
+### Implication and if-else constraints
+
+The if–else style constraint declarations are equivalent to implications
+
+```systemverilog
+    if (mode == little)
+    len < 10;
+    else if (mode == big)
+    len > 100;
+```
+
+which is equivalent to
+
+```systemverilog
+    mode == little -> len < 10 ;
+    mode == big -> len > 100 ;
+```
+
+Implication and if-else constraints are bidirectional.
+The value of `mode` constrains the value of `len`, 
+and the value of `len` constrains the value of `mode`.
+
+
+### Iterative constraints
+
+- `foreach`
+- Array reduction: `with`
+
+
+### Random variable solving order
+
+```systemverilog
+solve <random_variable> before <random_variables>
+```
+
+The variable ordering can be used to force selected corner cases to occur more frequently than they would otherwise.
+For example: 
+
+```systemverilog
+class B;
+    rand bit s;
+    rand bit [31:0] d;
+
+    constraint c { s -> d == 0; }
+endclass
+```
+
+Where the probability of `s == 1` is `1/(1+2^32)`.
+
+```systemverilog
+class B;
+    rand bit s;
+    rand bit [31:0] d;
+
+    constraint c { s -> d == 0; }
+    constraint order { solve s before d; }
+endclass
+```
+
+Where the probability of `s == 1` is `1/2`.
+
+
+### Static constraints
+
+Static constraints are constraints declared with qualifier `static`. 
+If a constraint block is declared as static, 
+then calls to `constraint_mode()` shall affect all instances of the specified constraint in all objects.
+
+
+### Functions in constraints
+
+Fuctions could be used in constraint expressions. 
+And functions in constaints imposes certain semantic restrictions, as follows: 
+- functions cannot contain `output` or `ref` arguments (`const ref` is allowed).
+- functions should be automatic and have no side effects. 
+- functions cannot modify the constraints, for example, calling `rand_mode` or `constraint_mode` methods.
+- functions shall be called before constraints are solved. 
+- random variables used as function arguments have higher implicit variable ordering priorities. 
+- circular dependencies created by the implicit variable ordering shall result in an error. 
+- function calls in active constraints are executed an unspecified number of times (at least once) in an unspecified order. 
+
+
+### Soft constraints
+
+When there is no solution that satisfies all active constraints simultaneously, 
+the soft constraints will be discard generally in the declaration order, 
+and find a solution that satisfies the remaining constraints.
+
+
+## Randomization methods
+
+`randomize()` is a built-in virtual method for every class, 
+which is invoked to random values and cannot be overridden. 
+When `randomize()` is called with arguments, 
+those arguments designate the complete set of random variables within that object; 
+all other variables in the object are considered state variables.
+
+
+`pre_randomize()` and `post_randomize()` are automatically invoked before and after `randomize()`. 
+
+Users can override the `pre_randomize()` in any class to perform 
+initialization and set preconditions before the object is randomized. 
+If the class is a derived class and no user-defined implementation of `pre_randomize()` exists, 
+then `pre_randomize()` will automatically invoke `super.pre_randomize()`.
+
+Users can override the `post_randomize()` in any class to perform 
+cleanup, print diagnostics, and check post-conditions after the object is randomized. 
+If the class is a derived class and no user-defined implementation of `post_randomize()` exists, 
+then `post_randomize()` will automatically invoke `super.post_randomize()`.
+
+If these methods are overridden, 
+they shall call their associated base class methods; 
+otherwise, their pre- and post-randomization processing steps shall be skipped.
+
+```systemverilog
+class XYPair;
+    rand integer x, y;
+endclass
+
+class MyXYPair extends XYPair
+    function void pre_randomize();
+        super.pre_randomize();
+        $display("Before randomize x=%0d, y=%0d", x, y);
+    endfunction
+    
+    function void post_randomize();
+        super.post_randomize();
+        $display("After randomize x=%0d, y=%0d", x, y);
+    endfunction
+endclass
+```
+
+
+## In-line constraints
+
+By using the `randomize() with` construct, 
+users can declare in-line constraints at the point where the `randomize()` method is called.
+For example: 
+```systemverilog
+class SimpleSum;
+    rand bit [7:0] x, y, z;
+    constraint c {z == x + y;}
+endclass
+
+task InlineConstraintDemo(SimpleSum p);
+    int success;
+    success = p.randomize() with {x < y;};
+endtask
+```
+
+`randomize() with` is used to introduce an additional constraint that `x < y`.
+
+
+## Enable random constraints and variables
+
+The `constraint_mod()`method can be used to control whether a constraint is active or inactive. 
+Wih argument `0` is to diable the random constraint. 
+
+The `rand_mode()` method can be used to control whether a random variable is active or inactive. 
+Wih argument `0` is to diable the random variable. 
 
 
 # Program
