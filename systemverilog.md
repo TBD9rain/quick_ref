@@ -235,6 +235,37 @@ Available built-in methods:
 - `prev(<N>)`
 
 
+### Event
+
+`event` provides a powerful and efficient handle to a synchronization object. 
+The object referenced by an event variable can be explicitly triggerd and waited for. 
+
+```systemverilog
+event done              ;      // declare a new event called done
+event done_too = done   ;      // declare done_too as alias to done
+event empty = null      ;      // event variable with no synchronization object
+```
+
+To trigger an event, use `->` operator or `->>`: 
+```systemverilog
+->  done    ;   //  usual trigger
+->> done    ;   //  trigger the referenced event in the nonblocking assignment region
+```
+
+To wait an event, use `@` operator: 
+```systemverilog
+@ done_too;
+```
+
+`wait_order` construct could be used to suspends the calling process 
+until all of the specified events are triggered in the given order (left to right) 
+or any of the untriggered events are triggered out of order and thus causes the operation to fail.
+```
+wait_order (<ordered_event_list>) [<statements>]
+[else [<statements>]]
+```
+
+
 ## Aggragate data types
 
 ### Arrays
@@ -754,7 +785,7 @@ An extended subclass may provide an implementation within a virtual function wit
 
 # Processes
 
-# Structured procedure
+## Structured procedure
 
 Structured procedures includes: 
 - initial
@@ -762,6 +793,9 @@ Structured procedures includes:
 - final
 - task
 - function
+
+A `final` procedure executes when simulation ends 
+due to an explicit or implicit call to `$finish`. 
 
 
 ### Fuction and task
@@ -829,7 +863,7 @@ New loop statements contrast to verilog:
 In `for` loop statements, local variable delcaration is legal in initialization statement.
 
 
-### Jumpstatements
+### Jump statements
 
 - `continue`
 - `break`
@@ -928,7 +962,7 @@ Similarly, output (or inout) signals are driven skew simulation time units after
 
 `automatic` can be used in varaible, task, function, 
 module, interface, program, and pakcage delcarations. 
-By defualt, delcarations are static. 
+By defualt, delcarations are **static**. 
 
 An automatic delcaration will create specific variable storage for each invocation. 
 A static or default declaration will share a common variable storage on each invocation. 
@@ -990,9 +1024,6 @@ Differences between defered immediate assertions and simple immediate assertions
 - Reporting is delayed rather than being reported immediately.
 - Statements may only contain a single subroutine call.
 - A deferred assertion may be used as a module common item.
-
-
-## Concurrent assertions
 
 
 
@@ -1385,10 +1416,512 @@ endtask
 ## Enable random constraints and variables
 
 The `constraint_mod()`method can be used to control whether a constraint is active or inactive. 
-Wih argument `0` is to diable the random constraint. 
+With argument `0` is to diable the random constraint. 
 
 The `rand_mode()` method can be used to control whether a random variable is active or inactive. 
-Wih argument `0` is to diable the random variable. 
+With argument `0` is to diable the random variable. 
+
+
+# Functional Coverage
+
+Coverage is defined as the percentage of verification objectives that have been met. 
+There are two types of coverage metrics: *code coverage* and *functional coverage*. 
+The code coverage can be automatically extracted from the design code. 
+The functional coverage are user-defined in order to tie the verification environment to the design intent. 
+
+The functional coverage could be reached with SystemVerilog functional coverage constructs. 
+
+
+## Coverage model
+
+The `covergroup` construct encapsulates the specification of a coverage model. 
+The `covergroup` construct is a user-defined type. 
+The type definition is written once, 
+and multiple instances of that type can be created in different contexts. 
+Similar to a `class`, once defined, a `covergroup` instance can be created via the `new()` operator. 
+A covergroup can be defined in a package, module, program, interface, checker, or class.
+```
+covergroup <covergroup_name> [<coverage_evnet>];
+    <coverage_specifications> ;
+    <coverage_options> ;
+endgroup
+```
+
+If a `<clocking_event>` is specified, 
+it defines the event at which coverage points are sampled. 
+If a `<clocking_event>` is not specified, 
+users must procedurally trigger the coverage sampling via the built-in `sample()` method. 
+`sample()` method could be overridden. 
+
+A `covergroup` could contain one or more `<coverage_spcifications>`. 
+`<coverage_spcifications>` could be cover\_point or cover\_cross. 
+
+```systemverilog
+enum    { red, green, blue }    color;
+bit     [3:0]                   pixel_adr, pixel_offset, pixel_hue;
+
+covergroup g2 @(posedge clk);
+    Hue:    coverpoint  pixel_hue;
+    Offset: coverpoint  pixel_offset;
+
+    AxC:    cross       color, pixel_adr;       // cross 2 variables (implicitly declared coverpoints)
+    all:    cross       color, Hue, Offset;     // cross 1 variable and 2 coverpoints
+endgroup
+```
+
+A `covergroup` can also specify one or more `<coverage_options>` to control 
+and regulate how coverage data are structured and collected.
+Coverage options can be specified for the `covergroup` as a whole or 
+for specific items within the coverage group, 
+that is, any of its coverage points or crosses.
+
+
+## Using covergroup in classes
+
+By embedding a coverage group within a class definition, 
+the covergroup provides a simple way to cover a subset of the class properties.
+
+```systemverilg
+class xyz;
+    bit [3:0] m_x;
+    int m_y;
+    bit m_z;
+
+    covergroup cov1 @m_z; // embedded covergroup
+        coverpoint m_x;
+        coverpoint m_y;
+    endgroup
+
+    function new(); 
+        cov1 = new; 
+    endfunction
+endclass
+```
+
+A `covergroup` declaration within a class is an embedded covergroup declaration. 
+An embedded `covergroup` declaration declares an anonymous covergroup type and 
+an instance variable of the anonymous type. 
+The `<covergroup_name>` defines the name of the instance variable. 
+In the preceding example, 
+a variable cov1 (of the anonymous coverage group) is implicitly declared.
+
+An embedded coverage group can be explicitly instantiated in the new method. 
+If it is not, 
+then the coverage group is not created and no data will be sampled.
+
+
+## Coverage points
+
+The coverpoint syntax is as following: 
+```
+[<coverpoint_label>: ]
+coverpoint <coverpoint_expression>
+[ iff (<iff_expression>)]
+{<coverpoint_bin>[ <coverpoint_bin>]} OR ;
+```
+
+If the label is specified, then it designates the name of the coverage point.
+This name can be used to add this coverage point to a cross coverage specification 
+or to access the methods of the coverage point.
+
+A coverage point can sample the values that correspond to a particular scheduling region 
+by specifying a clocking block signal. 
+Thus, a coverage point that denotes a clocking block signal will sample the values made available by the clocking block. 
+If the clocking block specifies a skew of #1step, 
+the coverage point will sample the signal values from the Preponed region. 
+If the clocking block specifies a skew of #0, 
+the coverage point will sample the signal values from the Observed region. 
+
+Only constant expressions, global and instance constants , or non-ref arguments to the covergroup 
+are allowed to be used as variables in a `<coverpoint_expression>`. 
+
+The expression within the `iff` construct specifies an optional condition 
+that disables coverage for that coverpoint. 
+If the guard expression evaluates to false at a sampling point, 
+the coverage point is ignored. 
+
+
+### Coverage point bins
+
+A **value** bin could be created as following: 
+```
+[wildcard ]
+bins OR illegal_bins OR ignore_bins
+<bin_name> = {<range_list>}
+[ with (<with_expression>)]
+[ iff (<iff_expression>)]
+;
+```
+
+A wildcard bin definition causes all `X`, `Z`, or `?` to be treated as wildcards for `0` or `1`.
+
+The `ignore_bins` is used to explicitly excluded from coverage. 
+The `illegal_bins` is used to explicitly excluded from coverage. 
+If an illegal value or transition occurs, a runtime error is issued.
+
+A coverage point bin associates a name and a count with a set of values or a sequence of value transitions. 
+If the bin designates a set of values, 
+the count is incremented every time the coverage point matches one of the values in the set. 
+If the bin designates a sequence of value transitions, 
+the count is incremented every time the coverage point matches the entire sequence of value transitions. 
+
+The bins for a coverage point can be automatically created by SystemVerilog 
+or explicitly defined using the bins construct to name each bin. 
+If the bins are not explicitly defined, 
+they are automatically created by SystemVerilog. 
+The number of automatically created bins can be controlled using the `auto_bin_max` coverage option.
+
+```systemverilog
+bit [9:0] v_a;
+
+covergroup cg @(posedge clk);
+    coverpoint v_a
+    {
+        bins a = { [0:63],65 };
+        bins b[] = { [127:150],[148:191] }; // note overlapping values
+        bins c[] = { 200,201,202 };
+        bins d = { [1000:$] };
+        bins others[] = default;
+    }
+endgroup
+```
+
+In the preceding example, 
+the first bins construct associates bin `a` with the values of variable `v_a` between 0 and 63 and the value 65. 
+The second bins construct creates a set of 65 bins b[127], b[128],...b[191].
+Likewise, the third bins construct creates 3 bins: c[200], c[201], and c[202]. 
+The fourth bins construct associates bin d with the values between 1000 and 1023 ($ represents the maximum value of `v_a`). 
+Every value that does not match bins a, b[], c[], or d is added into its own distinct bin.
+
+The `default` specification defines a bin that is associated with none of the defined value bins. 
+However, the coverage calculation shall not take into account the coverage captured by the default bin.
+
+The `with` clause specifies that only those values in the `<range_list>` 
+that satisfy the given `<with_expression>` are included in the bin.
+
+A transition bin could be created as following: 
+```
+[wildcard ]
+bins OR illegal_bins OR ignore_bins
+<bin_name> [[]] = (<trans_range_list> => <trans_range_list>)[, (<trans_range_list> => <trans_range_list>)]
+[ iff (<iff_expression>)]
+;
+```
+
+The `<trans_range_list>` is consists of values and optional repetition indicator. 
+
+```systemverilog
+1 => 2              //  1 to 2
+1, 2 => 2, 3        //  1 to 2 or 1 to 3 or 2 to 2 or 2 to 3
+3 [* 5]             //  3 => 3 => 3 => 3 => 3
+3 [* 3:5]           //  3 => 3 => 3, 3 => 3 => 3 => 3, 3 => 3 => 3 => 3 => 3
+... => 4            //  any value except 4 to 4
+3 [-> 2] => 5       //  .. => 3 ... => 3 => 5
+3 [= 2] => 5        //  .. => 3 ... => 3 ... => 5
+```
+
+A transition bins example: 
+```systemverilog
+bit [4:1] v_a;
+
+covergroup cg @(posedge clk);
+    coverpoint v_a
+    {
+        bins    sa          = (4 => 5 => 6), ([7:9],10=>11,12);
+        bins    sb[]        = (4=> 5 => 6), ([7:9],10=>11,12);
+        bins    sc          = (12 => 3 [-> 1]);
+        bins    allother    = default sequence ;
+    }
+endgroup
+```
+
+
+## Coverage cross
+
+A coverage group can specify cross coverage between two or more coverage points or variables. 
+Cross coverage is specified using the cross construct. 
+When a variable V is part of a cross coverage, 
+SystemVerilog implicitly creates a coverage point for the variable, 
+as if it had been created by the statement
+`coverpoint V;`. 
+Thus, a cross involves only coverage points. 
+Expressions cannot be used directly in a cross; 
+a coverage point must be explicitly defined first.
+
+```
+[cross_label: ]cross 
+(<coverpoint_label> OR <variable_name>), (<coverpoint_label> OR <variable_name>)[, (<coverpoint_label> OR <variable_name>)]
+[ iff (<iff_expression>)]
+({(<cross_bins> OR <cross_options>)} OR ;)
+```
+
+Cross coverage of a set of N coverage points is defined as the coverage of all combinations of all bins 
+associated with the N coverage points, that is, the Cartesian product of the N sets of coverage point bins. 
+Cross coverage is allowed only between coverage points defined within the same coverage group. 
+
+
+### Cross coverage bins
+
+User-defined bins for cross coverage are defined using bin select expressions. 
+The sytax is as following: 
+```
+bins OR ignored_bins OR illegal_bins 
+=
+<select_expression>
+[ iff (<iff_expression>)]
+```
+
+User-defined cross bins and automatically generated bins can coexist in the same cross. 
+Automatically generated bins are retained for those cross products 
+that do not intersect cross products specified by any user-defined cross bin.
+
+The `binsof` construct yields the bins of its expression. 
+For example: 
+```systemverilog
+binsof (x) intersect {y}
+```
+denotes the bins of coverage point `x` whose values intersect the range given by `y`. 
+```systemverilog
+! binsof (x) intersect {y}
+```
+denotes the bins of coverage point `x` whose values do not intersect the range given by `y`. 
+
+A user-defined corss coverage example: 
+```systemverilog
+bit [7:0] v_a, v_b;
+
+covergroup cg @(posedge clk);
+    a: coverpoint v_a
+    {
+        bins a1 = { [0:63] };
+        bins a2 = { [64:127] };
+        bins a3 = { [128:191] };
+        bins a4 = { [192:255] };
+    }
+
+    b: coverpoint v_b
+    {
+        bins b1 = {0};
+        bins b2 = { [1:84] };
+        bins b3 = { [85:169] };
+        bins b4 = { [170:255] };
+    }
+
+    c : cross a, b
+    {
+        //  <a1,b1>, <a1,b2>, <a1,b3>, and <a1,b4>
+        bins c1 = ! binsof(a) intersect {[100:200]}; 
+        //  <a2,b1>, <a2,b2>, <a2,b3>, <a2,b4>, <a1,b2>, <a3,b2>, and <a4,b2>
+        bins c2 = binsof(a.a2) || binsof(b.b2); 
+        //  <a1,b4>
+        bins c3 = binsof(a.a1) && binsof(b.b4); 
+
+        //  cross retains those automatically generated bins 
+        //  that represent cross products not intersecting any of the user-defined bins.
+        //  <a3,b1>, <a4,b1>, <a3,b3>, <a4,b3>, <a3,b4>, and <a4,b4>
+    }
+endgroup
+```
+
+The `with` clause is used to select bins tuples with values satisfying `<with_condition>`. 
+The `with` syntax is as following: 
+```
+<select_expression>
+with (<with_condition>) 
+[ matches <match_num>]
+```
+
+The optional `matches` clause specifies the selection policy. 
+The `match_num` shall evaluate to a positive integer or `$`, 
+representing the minimum number of satisfying **value tuples** required to select the candidate bin tuple. 
+The `$` symbol specifies that all value tuples must satisfy the expression to select the candidate bin tuple. 
+When the `matches` clause is omitted, the selection policy defaults to one.
+
+
+## Coverage options
+
+There are two types of options: 
+for an **instance** of a covergroup and 
+for the covergroup **type** as a whole.
+
+Cover option can be set within a `covergroup`, a `coverpoint` or a `cross`.  
+A coverage option specified at the covergroup level applies to all of its items unless overridden by them.
+
+
+### Instance-specific covergroup options
+
+Instance-specific covergroup options include: 
+- `name`
+- `weight`, weight for coverage calculation, default is 1. 
+- `goal`, coverage goal, default is 100. 
+- `comment`, default is `""`
+- `at_least`, minimum number of hits for each bin, default is 1. 
+    A bin with a hit count that is less than number is not considered covered.
+- `auto_bin_max`, maximum number of automatically created bins 
+    when no bins are explicitly defined for a coverpoint, default is 64.
+- `cross_num_print_missing`, number of not covered cross product bins 
+    that shall be saved to the coverage database and printed in the coverage report, 
+    default is 0. 
+- `detect_overlap`, when true, a warning is issued if there is an overlap between the
+    range list (or transition list) of two bins of a coverpoint, default is 0. 
+- `per_instance`, default is 0. When true, 
+    coverage information for this covergroup instance shall be saved in the coverage database 
+    and included in the coverage report. 
+    When false, implementations are not required to save instance-specific information.
+- `get_inst_coverage`, 
+
+An example for coverage options: 
+```systemverilog
+covergroup g1 (int w, string instComment) @(posedge clk) ;
+    // track coverage information for each instance of g1 in addition
+    // to the cumulative coverage information for covergroup type g1
+    option.per_instance = 1;
+
+    // comment for each instance of this covergroup
+    option.comment = instComment;
+
+    a : coverpoint a_var
+    {
+        // Create 128 automatic bins for coverpoint “a” of each instance of g1
+        option.auto_bin_max = 128;
+    }
+
+    b : coverpoint b_var
+    {
+        // This coverpoint contributes w times as much to the coverage of an
+        // instance of g1 as coverpoints "a" and "c1"
+        option.weight = w;
+    }
+
+    c1 : cross a_var, b_var ;
+endgroup
+```
+
+### Type-specific covergroup options
+
+Type-specific covergroup options include: 
+- `weight`, 
+- `goal`, 
+- `comment`, 
+- `strobe`, default is 0.
+    When true, all samples happen at the end of the time slot, 
+    like the $strobe system task.
+- `merge_instances`, default is 0. 
+    When true, cumulative (or type) coverage is computed by merging instances together 
+    as the union of coverage of all instances. 
+    When false, type coverage is computed as the weighted average of instances.
+- `distribute_first`, default is 0. 
+    When true, instructs the tool to perform value distribution to the bins 
+    prior to application of the `with_covergroup_expression`.
+
+An example: 
+```systemverilog
+covergroup g1 (int w, string instComment) @(posedge clk) ;
+    // track coverage information for each instance of g1 in addition
+    // to the cumulative coverage information for covergroup type g1
+    option.per_instance = 1;
+
+    type_option.comment = "Coverage model for features x and y";
+
+    type_option.strobe = 1; // sample at the end of the time slot
+
+    // compute type coverage as the merge of all instances
+    type_option.merge_instances = 1;
+
+    // comment for each instance of this covergroup
+    option.comment = instComment;
+
+    a : coverpoint a_var
+    {
+        // Use weight 2 to compute the coverage of each instance
+        option.weight = 2;
+        // Use weight 3 to compute the cumulative (type) coverage for g1
+        type_option.weight = 3;
+        // NOTE: type_option.weight = w would cause syntax error.
+    }
+
+    b : coverpoint b_var
+    {
+        // Use weight w to compute the coverage of each instance
+        option.weight = w;
+        // Use weight 5 to compute the cumulative (type) coverage of g1
+        type_option.weight = 5;
+    }
+endgroup
+```
+
+In the preceding example, the coverage for each instance of g1 is computed as follows: 
+$$
+\frac{(((instance\ coverage\ of\ a) \times 2) + ((instance\ coverage\ of\ b) \times w))}
+{w + 2}
+$$
+
+On the other hand, the coverage for covergroup type g1 is computed as follows: 
+$$
+\frac{(((coverage\ merge\ from\ all\ instances) \times 3) + 
+((coverage\ merge\ from\ all\ b\ instances) \times 5))}
+{3 + 5}
+$$
+
+
+## Coverage tasks and functions
+
+### Covergroup type methods
+
+|Method                                         |Description                                                |
+|:---                                           |:---                                                       |
+|`void sample()`                                |Trigger sampling of the covergroup                         |
+|`real get_coverage()`                          |Calculates **type** coverage number                        |
+|`real get_coverage(ref int, ref int)`          |return covered bins number and total bins number as well   |
+|`real get_inst_coverage()`                     |Calculates **inst** coverage number                        |
+|`real get_inst_coverage(ref int, ref int)`     |return covered bins number and total bins number as well   |
+|`void set_inst_name(string)`                   |Set the instance name to the given string                  |
+|`void start()`                                 |Starts collecting coverage information                     |
+|`void stop()`                                  |Stops collecting coverage information                      |
+
+The `get_coverage()` method returns the or type coverage, 
+which considers the contribution of all instances of a particular coverage item; 
+and it is a static method that is available on both types (via the `::` operator) 
+and instances (using the `.` operator). 
+
+The `get_inst_coverage()` method returns the coverage of the specific instance on which it is invoked; 
+thus, it can only be invoked via the `.` operator.
+
+
+### Coverage system tasks and functions
+
+Coverage system tasks and functions help to manage coverage data collection: 
+- `$set_coverage_db_name(<file_name>)`, 
+    sets the file name of the coverage database. 
+- `$load_coverage_db(<file_name>)`, 
+    loads coverage information from the given file name. 
+- `$get_coverage`, 
+    returns a real number of overall coverage of all covergroup types. 
+
+
+## Coverage computation
+
+Coverage of a coverpoint: 
+$$
+C_i = \frac{|bins_{covered}|}{|bins_{valid}|}
+$$
+
+For automatic bins, 
+the $bins_{valid}$ is the minimum between the `auto_bin_max` or the $2^{M}$, 
+where $M$ is the bit number needed to represent the coverpoint. 
+
+Coverage of a coverage group: 
+$$
+C_g = \frac{\sum_{i} W_i \times C_i }{\sum_{i} W_i}
+$$
+
+The $C_i$ is the coverage of `coverpoint` or `cross`. 
+The $W_i$ is the weight. 
+
+Type coverage: 
+$$
+C_t = \frac{\sum_{i} W_i \times I_i }{\sum_{i} W_i}
+$$
 
 
 # Program
@@ -1626,4 +2159,5 @@ program T (A_Bus.STB b1, A_Bus.STB b2 ); // testbench: 2 synchronous ports
     end
 endprogram
 ```
+
 
