@@ -7,6 +7,51 @@ To get help in Git, type `git help <operation>` or `git <operation> --help` in c
 For more info in Git, visit [Pro Git](https://git-scm.com/book/en/v2) or [Github doc](https://docs.github.com/en).
 
 
+# Usage Guide
+
+atom commit (commit each action) 
+should be the first choice for version and file management with Git. 
+
+Because of elaborated and concise commit message, 
+project log file is not necessary 
+
+The branch mergence should be complished with `git commit` operation. 
+On the other hand, 
+`git rebase` should be considered when facing git error correcting and others. 
+project error should be fixed with another commit with corresponding messages. 
+
+
+## Git message format
+
+```
+<action> <scope>: <abstract>
+
+<details>
+```
+
+`<action>` includes: 
+- add, add files 
+- mod, modify files  
+- rfc, refactor files   
+- tst, simulation, validation, or test
+- fix, fix bugs  
+- del, delete files 
+- oth, others
+
+`<scope>` includes: 
+- doc, document, includeing docx, pptx, and so on
+- dat, data 
+- alg, algorithm 
+- fxp, fixed-point modeling 
+- rtl, rtl source and simulation 
+- eda, fpga eda 
+- onb, onboard validation record 
+- git, git relevant 
+- oth, others 
+
+`<details>` are optional. 
+
+
 # Install Git
 
 Visit [Git download](https://git-scm.com/downloads) to get Git installation package.
@@ -517,7 +562,7 @@ with option `-X` to clean files ignored by Git
 
 To view commit history:
 ```
-git log
+git log [<option>] [<commit_range>] [[--] [<file_path>]]
 ```
 
 To change the message of each commit:
@@ -531,17 +576,24 @@ To change the message of each commit:
 |`--name-status`    |show changes of changed files                  |
 |`--pretty`         |show commits with alternate format             |
 
+The `--graph` and `p` are useful for overview and file content insertion locaiton respectively. 
+
 To limit number of commit to be printed, use following options:
 |Option                     |Description                                        |
 |:---                       |:---                                               |
 |`--all`                    |show all branches and commits                      |
-|`-[N]`                     |only last N commits                                |
+|`-<N>`                     |only last N commits                                |
+|`--first-parent`           |only show the first parent commits                 |
+|`-g`                       |view commits by time order                         |
 |`--since` or `--after`     |only commits after the specific date               |
 |`--until` or `--before`    |only commits before the specific date              |
 |`--grep`                   |only commits with messages containing the string   |
 |`-S`                       |only commits changing code matching the string     |
 |`--author`                 |only commits with matched author                   |
 |`committer`                |only commits with matched committer                |
+
+The `--all`, `-<N>`, and `--first-parent` are useful for commit history view. 
+The `-g` is important for lost commit finding. 
 
 
 ## Commit indexing
