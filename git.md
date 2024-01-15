@@ -385,8 +385,11 @@ or
 
 To add current untracked files or modified files from working directory to staging area: 
 ```
-git add [--] <path>
+git add [<option>] [--] <path>
 ```
+
+The option `-p` is used to choose which modifications to be added. 
+The option `-i` is used to interactively add files. 
 
 
 ## Commit files to local repository
