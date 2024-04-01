@@ -7,51 +7,6 @@ To get help in Git, type `git help <operation>` or `git <operation> --help` in c
 For more info in Git, visit [Pro Git](https://git-scm.com/book/en/v2) or [Github doc](https://docs.github.com/en).
 
 
-# Usage Guide
-
-atom commit (commit each action) 
-should be the first choice for version and file management with Git. 
-
-Because of elaborated and concise commit message, 
-project log file is not necessary 
-
-The branch mergence should be complished with `git commit` operation. 
-On the other hand, 
-`git rebase` should be considered when facing git error correcting and others. 
-project error should be fixed with another commit with corresponding messages. 
-
-
-## Git message format
-
-```
-<action> <scope>: <abstract>
-
-<details>
-```
-
-`<action>` includes: 
-- add, add files 
-- mod, modify files  
-- rfc, refactor files   
-- tst, simulation, validation, or test
-- fix, fix bugs  
-- del, delete files 
-- oth, others
-
-`<scope>` includes: 
-- doc, document, includeing docx, pptx, and so on
-- dat, data 
-- alg, algorithm 
-- fxp, fixed-point modeling 
-- rtl, rtl source and simulation 
-- eda, fpga eda 
-- onb, onboard validation record 
-- git, git relevant 
-- oth, others 
-
-`<details>` are optional. 
-
-
 # Install Git
 
 Visit [Git download](https://git-scm.com/downloads) to get Git installation package.
@@ -70,12 +25,12 @@ The usage of **Git commands** in windows command line is the focus of this ref.
 
 # Configure Git
 
-There are three Git config files in different levels and different disk locations to configure Git. 
-The configurations and options made during installation process can be modified in config files. 
+There are three Git config files in different levels and different disk locations to configure Git.
+The configurations and options made during installation process can be modified in config files.
 
 Three Git config files windows 10:
 
-1. system config file works for all login users of the OS: 
+1. system config file works for all login users of the OS:
     - \<git directory\>/ect/gitconfig
 2. global config file works for the current login user:
     - \<user directory\>/.gitconfig
@@ -87,7 +42,7 @@ Three Git config files windows 10:
 For more info, type `git config --help`.
 
 
-## List configurations 
+## List configurations
 
 To view git configures:
 
@@ -103,17 +58,17 @@ To add a new configuration or modify an existing configuration:
 ```
 git config [--local | --global | --system] <var> <value>
 ```
-Use option **`--local`**, **`--global`**, or **`--system`** 
-to create or modify the configuration in the specific config file. 
+Use option **`--local`**, **`--global`**, or **`--system`**
+to create or modify the configuration in the specific config file.
 
-If range is not given, 
+If range is not given,
 the configuration in the local config file will be set.
 
 To forcibly add a new configuration:
 ```
 git config --add [--local | --global | --system] <var> <value>
 ```
-If the configuration is existing, 
+If the configuration is existing,
 a same configuration will be added.
 
 To delete a configuration:
@@ -121,7 +76,7 @@ To delete a configuration:
 git config --unset [--local | --global | --system] <var>
 ```
 
-To configure user name and email in global config file (usually used): 
+To configure user name and email in global config file (usually used):
 ```
 git config --global user.name "USER NAME"
 git config --global user.email "MYEAMIAL@MINE.ME"
@@ -241,7 +196,7 @@ flowchart RL
 
         t0["Tree Node"]
 
-        b00["Bolb Node"] 
+        b00["Bolb Node"]
 
         c0 --> t0
         t0 --> b00
@@ -305,7 +260,7 @@ flowchart RL
         b40["Blob Node"]
 
         b41["Blob Node"]
-        
+
         b42["Blob Node"]
 
         c4 --> t4
@@ -327,7 +282,7 @@ flowchart RL
 
 ## From a local directory
 
-To initialize a local directory into a git repository: 
+To initialize a local directory into a git repository:
 ```
 cd <local_directory>
 git init
@@ -336,21 +291,21 @@ git init
 
 ## From an existing repository
 
-To clone an existing repository from the internet or a local path: 
+To clone an existing repository from the internet or a local path:
 ```
 git clone [-b <branch>] [--] <repository_path> [<path>]
 ```
-If `-b <branch>` is not given, 
-the default branch will be cloned. 
+If `-b <branch>` is not given,
+the default branch will be cloned.
 
-If `<path>` is not given, 
+If `<path>` is not given,
 a new working directory will be created to hold the repository.
 The new directory will be named as the same as the repository.
 
 
 ## Check git repository status
 
-To check the status of git repository: 
+To check the status of git repository:
 ```
 git status
 ```
@@ -359,7 +314,7 @@ git status
 
 ## Delete local repository
 
-To delete a git repository from local disk: 
+To delete a git repository from local disk:
 ```
 cd <target_directory>
 rm -rf .git
@@ -369,37 +324,37 @@ or directly delete `.git` directory by manual operations.
 
 ## Ignore specific files
 
-To ignore specific files during checking git status, 
-add a file named `.gitignore` in local repository directory. 
+To ignore specific files during checking git status,
+add a file named `.gitignore` in local repository directory.
 The `.gitignore` file specifies which files are intended to be ignored.
 
-For more info about file ignorance, check 
+For more info about file ignorance, check
 [Pro git](https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository).
-or 
-[github page](https://github.com/github/gitignore) 
+or
+[github page](https://github.com/github/gitignore)
 
 
 # Make a Commit
 
 ## Add new files to staging area
 
-To add current untracked files or modified files from working directory to staging area: 
+To add current untracked files or modified files from working directory to staging area:
 ```
 git add [<option>] [--] <path>
 ```
 
-The option `-p` is used to choose which modifications to be added. 
-The option `-i` is used to interactively add files. 
+The option `-p` is used to choose which modifications to be added.
+The option `-i` is used to interactively add files.
 
 
 ## Commit files to local repository
 
-To commit files from staging area to local repository and archive: 
+To commit files from staging area to local repository and archive:
 ```
 git commit
 ```
 
-After execution of this command, 
+After execution of this command,
 a default editor will pop up and waits for a commit message being entered.
 The commit will fail without a commit message.
 
@@ -407,8 +362,8 @@ To modify last commit (files or commit message):
 ```
 git commit --amend
 ```
-The command won't create a new commit. 
-However, if the last commit has been **pushed** to remote, 
+The command won't create a new commit.
+However, if the last commit has been **pushed** to remote,
 there will be a new commit generated.
 
 
@@ -424,7 +379,7 @@ git rm --cached [--] <path>
 
 ## Discard changes in working directory
 
-To discard **changes** of the files in working directory: 
+To discard **changes** of the files in working directory:
 ```
 git restore [--] <path>
 ```
@@ -432,7 +387,7 @@ or
 ```
 git checkout [--] <path>
 ```
-Both commands will reload the cached or archived verison of the files in the search order of: 
+Both commands will reload the cached or archived verison of the files in the search order of:
 1. **staging area**
 2. **last commit**
 
@@ -441,7 +396,7 @@ The files will still be tracked by git after these commands.
 
 ## Discard changes in staging area
 
-To move **changes** of the files from staging area to working directory: 
+To move **changes** of the files from staging area to working directory:
 ```
 git restore --staged [--] <path>
 ```
@@ -492,22 +447,22 @@ To view differences of a file between specific commit and current working direct
 ```
 git diff [<commit>] [--] [<path>]
 ```
-where the file in the commit will be marked as `a`, 
+where the file in the commit will be marked as `a`,
 the file in the working directory as `b`.
 
-If the `<commit>` is not given, 
-and there is a staged version of the file, 
+If the `<commit>` is not given,
+and there is a staged version of the file,
 the file in staging area will be compared.
 Otherwise, the file in the last commit will be compared.
 
-If a directory or a file path as `[--] <path>` is not given, 
+If a directory or a file path as `[--] <path>` is not given,
 all files will be compared.
 
 To view differences of a file between the `<commit>` and staging area:
 ```
 git diff --cached [<commit>] [--] [<path>]
 ```
-where the file in the `<commit>` or the last commit will be marked as `a`, 
+where the file in the `<commit>` or the last commit will be marked as `a`,
 and the file in staging area will be marked as `b`.
 
 To view differences of a file between two commits:
@@ -517,11 +472,11 @@ git diff <commit_a> <commit_b> [--] [path]
 where the file on `<commit_a>` will be marked as `a`,
 and the file in `<commit_b>` will be marked as `b`.
 
-To view differences of a file between common ancestor of commits and `<commit_b>`: 
+To view differences of a file between common ancestor of commits and `<commit_b>`:
 ```
 git diff --merge-base <commit_a> [<commit_b>] [--] [<path>]
 ```
-If only `<commit_a>` is given, 
+If only `<commit_a>` is given,
 the differences between common ancestor of `<commit>` and HEAD will be displayed.
 
 
@@ -533,7 +488,7 @@ git difftool [-t=<tool>] <...>
 ```
 where `<...>` are options like `git diff`.
 
-If the `[-t=<tool>]` is not given, 
+If the `[-t=<tool>]` is not given,
 the default editor will be launched.
 
 To view available tools:
@@ -554,8 +509,8 @@ To clean untracked files which are not ignored:
 ```
 git clean
 ```
-with option `-i` to run interactively, 
-with option `-x` to clean Git produced files which are ignored by default, 
+with option `-i` to run interactively,
+with option `-x` to clean Git produced files which are ignored by default,
 with option `-X` to clean files ignored by Git
 
 
@@ -579,7 +534,7 @@ To change the message of each commit:
 |`--name-status`    |show changes of changed files                  |
 |`--pretty`         |show commits with alternate format             |
 
-The `--graph` and `p` are useful for overview and file content insertion locaiton respectively. 
+The `--graph` and `p` are useful for overview and file content insertion locaiton respectively.
 
 To limit number of commit to be printed, use following options:
 |Option                     |Description                                        |
@@ -595,8 +550,8 @@ To limit number of commit to be printed, use following options:
 |`--author`                 |only commits with matched author                   |
 |`committer`                |only commits with matched committer                |
 
-The `--all`, `-<N>`, and `--first-parent` are useful for commit history view. 
-The `-g` is important for lost commit finding. 
+The `--all`, `-<N>`, and `--first-parent` are useful for commit history view.
+The `-g` is important for lost commit finding.
 
 
 ## Commit indexing
@@ -617,7 +572,7 @@ To show details of a commit:
 ```
 git show <commit>
 ```
-If `<commit>` is not given, 
+If `<commit>` is not given,
 details of the HEAD commit will be displayed
 
 
@@ -657,7 +612,7 @@ Replace `-d` with `-D` to forcibly delete a branch which hasn't been merge to ot
 
 ## Checkout branches
 
-To checkout an existing branch (move `HEAD` pointer to the branch, 
+To checkout an existing branch (move `HEAD` pointer to the branch,
 and start to work on the branch):
 ```
 git checkout <branch>
@@ -673,16 +628,18 @@ git checkout -b <branch>
 
 To merge current branch **with (not to)** target branch:
 ```
-git merge <target_branch>
+git merge [--no-ff] <target_branch>
 ```
 
-If the last commit of the target branch is directly ahead of the commit of the current branch, 
+By default, if the last commit of the target branch is directly ahead of the commit of the current branch,
 the pointer of current branch will be move forward (fast-forward mode).
 
-If the two branch diverged from an older point, 
+If the two branch diverged from an older point,
 there will be a new commit merged by the current branch and the target branch.
 
-During a merge, among changes from different sides made to the common ancestor, 
+With `--no-ff`, create a merge commit in all cases.
+
+During a merge, among changes from different sides made to the common ancestor,
 **changes made to different areas** in sides will be incorporated in the final result.
 When both sides **made changes to the same area**, Git will report a confilct.
 
@@ -706,17 +663,17 @@ To abort merge operation:
 git merge --abort
 ```
 
-For more info about merge, check 
+For more info about merge, check
 [advanced merging](https://git-scm.com/book/en/v2/Git-Tools-Advanced-Merging)
 
 To use the interactive tool to handle merge conflicts:
 ```
 git mergetool [-t=<tool>]
 ```
-If the `-t=<editor>` is not given, 
+If the `-t=<editor>` is not given,
 the default tool will be launched.
 
-For vim, the layout is explained and changed as shown in 
+For vim, the layout is explained and changed as shown in
 [vimdiff](https://git-scm.com/docs/vimdiff/en)
 
 To view available tools:
@@ -731,10 +688,10 @@ To temporarily save current staging area and working directory for later recover
 ```
 git stash [push]
 ```
-After this command, 
+After this command,
 the staging area and working directory will be the same as the last commit.
 To stash staging area and not clean staging area add option `--keep-index`.
-To stash untracked files add option `-u` or `--include-untracked`, 
+To stash untracked files add option `-u` or `--include-untracked`,
 and `-a` or `--all` to stash ignored files as well.
 
 To view stash list:
@@ -749,7 +706,7 @@ git stash apply [--index] [<stash>]
 If `<stash>` is not given, the last stash will be loaded.
 **The `<stash>` in powershell should be embraced by single quotation marks.**
 
-Option `--index` is recommended. 
+Option `--index` is recommended.
 **Without `--index` the unstaged changes of tracked files will be staged automatically after `stash apply`.**
 
 To remove a specific stash from stash list:
@@ -774,7 +731,7 @@ To rebase current branch **to (not with)** a base branch:
 ```
 git rebase <base_branch>
 ```
-After this command, 
+After this command,
 conflicts between commits need manual resolution and:
 ```
 git add <conflict_file>
@@ -803,7 +760,7 @@ but **remain current staging area and working directory**:
 git reset --soft <commit>
 ```
 
-To reset commit and staging area, 
+To reset commit and staging area,
 but **remain current working directory**:
 ```
 git reset [--mixed] <commit>
@@ -813,10 +770,10 @@ To reset commit, staging area, and working directory:
 ```
 git reset --hard <commit>
 ```
-***This command is dangerous, 
+***This command is dangerous,
 which will lose the commits after the `<commit>`.***
 To undo this command, `reflog` is needed.
-For more info, check 
+For more info, check
 [git reflog](https://git-scm.com/search/results?search=git-reflog).
 
 
@@ -908,7 +865,7 @@ To specify branches and remote repository:
 ```
 git push <remote> [<local_branch>[:<remote_branch>]]
 ```
-add option `-u` to add upstream reference, 
+add option `-u` to add upstream reference,
 which will make `<local_branch>` to track `<remote_branch>`.
 
 To push all local branches:
@@ -965,7 +922,7 @@ If the remote branch can't be found, try ***update remote branch info*** above.
 
 ## Track branch
 
-Automatically, cloned branches and pushed branches 
+Automatically, cloned branches and pushed branches
 are tracked with corresponding remote branches.
 
 To manually set a remote upstream branch for current branch:
@@ -999,10 +956,10 @@ To add a repository into current local repository as submodule:
 ```
 git submodule add <repository_path> [<path>]
 ```
-If `<path>` is not specified, 
+If `<path>` is not specified,
 the repository will be added to a new directory named the same as the repository.
 
-After adding a submodule, a `.gitmodules` file will be added, 
+After adding a submodule, a `.gitmodules` file will be added,
 which records the submodule information.
 
 
@@ -1021,8 +978,8 @@ To view submodule differences add the option `--submodule` in `git diff` command
 
 ## Clone or pull a repository with submodule
 
-After cloning a repository or pulling a reposiroty with submodule, 
-use the following commands to clone the submodule repository: 
+After cloning a repository or pulling a reposiroty with submodule,
+use the following commands to clone the submodule repository:
 ```
 git submodule init
 git submodule update
@@ -1034,23 +991,23 @@ git submodule update --init
 Add option `--init` for pulling is safe for new committed submodules to be pulled.
 The option `--recursive` to update nested submodules.
 
-To clone a repository with its submodules at the same time: 
+To clone a repository with its submodules at the same time:
 ```
 git clone --recures-submodule <repository_path> [<path>]
 ```
 
-***If the access to remote repository of submodule is denied, 
+***If the access to remote repository of submodule is denied,
 try it in git bash. ***
 
 
 ## Update submodule
 
-Submodules can be updated by Git commands in the submodule directory. 
+Submodules can be updated by Git commands in the submodule directory.
 Or use the following command to updated with the default branch:
 ```
 git submodule update --remote [--merge | rebase] -- [<path>]
 ```
-If `--merge` or `--rebase` is not given, 
+If `--merge` or `--rebase` is not given,
 the HEAD pointer will be detached.
 Manual merge and rebase in submodule can fix this problem.
 
@@ -1091,26 +1048,26 @@ To view existing tags:
 git tag
 ```
 
-To list existing tags with match string, 
-where `-l` is as the same as `-list`: 
+To list existing tags with match string,
+where `-l` is as the same as `-list`:
 ```
 git tag -l <string>
 ```
 
-To add a tag to specific commit: 
+To add a tag to specific commit:
 ```
 git tag <tag> <commit>
 ```
-If `<commit>` is not given, 
+If `<commit>` is not given,
 the target commit is the last commit.
 
 To add a tag and annotations to specific commit:
 ```
 git tag -a <tag> <commit>
 ```
-If `<commit>` is not given, 
+If `<commit>` is not given,
 the target commit is the last commit.
-After execute the above command, 
+After execute the above command,
 an editor will pop up for annotating.
 
 To show tag and annotations:
