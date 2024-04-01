@@ -96,8 +96,8 @@
 |Command        |Mode                   |Description                                                                            |
 |:--            |:---                   |:---                                                                                   |
 |`v`            |N $\rightarrow$ V      |enter visual mode                                                                      |
-|`<Ctrl>-V`     |N $\rightarrow$ VB     |enter visual mode blockwise                                                            |  
-|`V`            |N $\rightarrow$ VL     |enter visual mode linewise                                                             | 
+|`<Ctrl>-V`     |N $\rightarrow$ VB     |enter visual mode blockwise                                                            |
+|`V`            |N $\rightarrow$ VL     |enter visual mode linewise                                                             |
 |`[N]I`         |VB $\rightarrow$ I     |enter insert mode, insert {text} before each selected lines for N times                |
 |`[N]A`         |VB $\rightarrow$ I     |enter insert mode, append {text} after each selected lines for N times                 |
 |`x` or `d`     |V, VB, VL              |delete selected texts                                                                  |
@@ -151,16 +151,66 @@
 Use command **`:help registers`** in vim to view descriptions for all registers.
 
 
+# Regular Expression Pattern
+
+A `{pattern}` consists of one or multiple `{branch}` seperated by `\|`:
+```
+{pattern}   ::= {branch}
+            OR {branch} \| {branch} \| {branch}
+```
+A `{pattern}` matches strings satisfying any one of the `{branch}`.
+If a string matches more than one `{branch}`,
+the first `{branch}` will be selected.
+
+A `{branch}` consists of one or multiple `{concat}` seperated by `\&`:
+```
+{branch}    ::= {concat}
+            OR {concat} \& {concat} \& {concat}
+```
+A `{branch}` matches strings satisfying all the `{concat}`.
+
+A `{concat}` consists of one or multiple adjacent `{piece}`:
+```
+{concat}    ::= {piece}
+            OR {piece}{piece}{piece}
+```
+A `{concat}` matches the `{piece}` sequetially
+
+A `{piece}` consist of an `{atom}` or an `{atom}` and a `{multi}`:
+```
+{piece} ::= {atom}
+        OR {atom}{multi}
+```
+A `{piece}` matches the `{atom}` one time or `{multi}` times.
+
+A `{atom}` could be a {ordinary-atom} or a parenthetical `{pattern}`:
+```
+{atom}  ::= {ordinary-atom}
+        OR \%({pattern}\)
+        OR \({pattern}\)
+        OR \z({pattern}\)
+```
+A `{ordinary-atom}` matches a character in strings.
+A `\%({pattern}\)` is a normal `{pattern}`,
+which could not be referenced.
+A `\({pattern}\)` could be referenced with `\n`,
+by current regular expression,
+where `n` is from 1 to 9.
+A `\z({pattern}\)` could be *externally* referenced with `\zn`
+by future regular expression,
+where `n` is from 1 to 9.
+
+
 # Pattern Search Commands
 
 |Command                    |Mode   |Description                                                                        |
 |:--                        |:---   |:---                                                                               |
 |`[N]/{pattern}[/[offset]]` |N      |search forward for the Nth string satisfying {pattern} and go [offset] lines down  |
-|`[N]/`                     |N      |search forward for the Nth string with last {pattern} and last [offset]            |
+|`[N]/`                     |N      |search forward for the Nth string with last {pattern} and the last [offset]        |
 |`[N]//[offset]`            |N      |search forward for the Nth string with last {pattern} and new [offset]             |
 |`[N]?{pattern}[?[offset]]` |N      |search backward for the Nth string satisfying {pattern} and go [offset] lines down |
-|`[N]/`                     |N      |search backward for the Nth string with last {pattern} and last [offset]           |
-|`[N]//[offset]`            |N      |search backward for the Nth string with last {pattern} and new [offset]            |
+|`[N]?`                     |N      |search backward for the Nth string with last {pattern} and last [offset]           |
+|`[N]??[offset]`            |N      |search backward for the Nth string with last {pattern} and new [offset]            |
 |`[N]*`                     |N      |search forward for the Nth string same as the identifier nearest to cursor         |
 |`[N]#`                     |N      |search backward for the Nth string same as the identifier nearest to cursor        |
 |`[N]n`                     |N      |repeat last search for N times                                                     |
@@ -175,7 +225,8 @@ Use command **`:help pattern`** in vim to view available pattern expressions.
 :[range]s[ubstitute]/{pattern}/{string}/[flag]
 ```
 
-Enter PS mode and substitute {pattern} pattern with {string} string in \[range\].
+Enter PS mode and substitute strings satisfying {pattern}
+with {string} in \[range\] lines.
 Replace operation is controlled by \[flag\].
 
 \[range\]:
@@ -192,7 +243,7 @@ c, need manual confirmation for each substitute;
 i, ignore case for {pattern};
 I, don't ignore case for {pattern}.
 
-Instead of `/`, other characters cloud be used as delimiter pattern substitute command, 
+Instead of `/`, other characters cloud be used as delimiter pattern substitute command,
 except alphanumeric characters, `\`, `"`, `|`, or `#`(for Vim9).
 
 ```
@@ -207,6 +258,36 @@ Repeat last substitute command with new [flag].
 
 Use command `:help substitute` in vim to view more information.
 Use command `:help pattern` in vim to view available pattern expressions.
+
+
+# Buffer Commands
+
+|Command                    |Mode   |Description                                                                    |
+|:--                        |:---   |:---                                                                           |
+|`:buffers[!] [flags]`      |N      |list all files in buffer, `!`: include unlisted files                          |
+|`[N]b[uffer][!]`           |N      |move to file `N` in buffer, `!`: include unlisted files                        |
+|`[N]bn[ext][!]`            |N      |move to the next `N` file, `!`: include unlisted files                         |
+|`[N]bp[revious][!]`        |N      |move to the previous `N` file, `!`: include unlisted files                     |
+|`bf[irst]                  |N      |move to the first file in buffer                                               |
+|`bl[ast]                   |N      |move to the last file in buffer                                                |
+|`bd[elet][!] [N]`          |N      |delete file `N` in buffer, `!`: delete with discarding unsaved modifications   |
+
+
+# Window Commands
+
+|Command                    |Mode   |Description                                                                    |
+|:--                        |:---   |:---                                                                           |
+|`<Ctrl>-w {h / j / k / l}` |N      |move cursor to the left, down, right, up, or right window                      |
+|`<Ctrl>-w {H / J / K / L}` |N      |move current window to the left, down, right, up, or right                     |
+|`<Ctrl>-w T`               |N      |move current window to a new tab page                                          |
+|`<Ctrl>-w =`               |N      |resize all windows to as the same size as possible                             |
+|`<Ctrl>-w _`               |N      |maximize current window height                                                 |
+|`<Ctrl>-w |`               |N      |maximize current window width                                                  |
+|`[N]<Ctrl>-w <`            |N      |decrease `N` (default is 1) to current window width                            |
+|`[N]<Ctrl>-w >`            |N      |increase `N` (default is 1) to current window width                            |
+|`[N]<Ctrl>-w -`            |N      |decrease `N` (default is 1) to current window height                           |
+|`[N]<Ctrl>-w +`            |N      |increase `N` (default is 1) to current window height                           |
+
 
 
 # Tab Page Commands
