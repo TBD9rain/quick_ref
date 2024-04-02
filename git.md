@@ -825,27 +825,59 @@ git remote remove <remote>
 ```
 
 
+## Update remote info
+
+To update commits of remote branches:
+```
+git remote update [<branch>]
+```
+If `[<branch>]` is not given,
+all branches will be updated.
+This command is similar to `git fetch`.
+
+To prune branches of specific remote:
+```
+git remote prune [--dry-run | -n] <remote>
+```
+Prune remote-tracking branches under `<remote>` are deleted.
+It's equivalent to `git fetch --prune <remote>`.
+
+
 ## View remote branches
 
-To view remote branches of all remote repositories:
+To show remote branch information:
+```
+git remote show <remote>
+```
+
+To view remote branches of all remote repositories with local record:
 ```
 git branch -r
 ```
 
-To view remote branches' tracking information:
+To view remote branches' tracking information with local record:
 ```
 git branch -vv
 ```
 
 
-## Update remote branch info
+## Track and untrack branch
 
-To update records of remote branches:
+Automatically, cloned branches and pushed branches
+are tracked with corresponding remote branches.
+
+To manually set a remote upstream branch for current branch:
 ```
-git remote update -p
+git branch -u <remote>/<remote_branch>
 ```
-If the remote repository was updated after the last communication with local,
-this command might be useful for further operations.
+If the remote branch can't be found, try ***update remote branch info*** above.
+
+To manually unset a remote upstream branch for current branch:
+```
+git branch --unset-upstream [<local_branch>]
+```
+If `[<local_branch>]` is not givin,
+the upstream of current branch will be unset.
 
 
 ## Push
@@ -876,14 +908,19 @@ git push --all
 
 ## Fetch
 
-To download commits from remote repository:
+`fetch` is similar to `remote update`.
+
+To update all remote repositories information and download all commits from remote repositories:
 ```
-git fetch
+git fetch --all
 ```
+
 To specify remote repository:
 ```
-git fetch <remote> <remote_branch>
+git fetch [<remote>] [<remote_branch>]
 ```
+The current branch from `origin` the remote repository will be used by defualt,
+unless there's an upstream branch for current branch.
 
 After fetch new commits, manual merge is needed.
 
@@ -916,18 +953,6 @@ git pull --all
 To copy a remote branch and checkout it:
 ```
 git checkout -t <remote>/<remote_branch>
-```
-If the remote branch can't be found, try ***update remote branch info*** above.
-
-
-## Track branch
-
-Automatically, cloned branches and pushed branches
-are tracked with corresponding remote branches.
-
-To manually set a remote upstream branch for current branch:
-```
-git branch -u <remote>/<remote_branch>
 ```
 If the remote branch can't be found, try ***update remote branch info*** above.
 
